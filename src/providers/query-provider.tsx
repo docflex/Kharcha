@@ -70,6 +70,7 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
     // doesn't cause a mismatch between SSR (loading) and client (cached data).
     const [persister, setPersister] = useState<ReturnType<typeof createPersister>>(undefined);
     useEffect(() => {
+        // eslint disable-next-line react-hooks/set-state-in-effect
         setPersister(createPersister());
     }, []);
 
