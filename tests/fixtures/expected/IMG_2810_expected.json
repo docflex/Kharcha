@@ -1,0 +1,14 @@
+{
+  "metadata": {
+    "month": "January",
+    "year": 2026,
+    "transactions": 193,
+    "income": 299301.32,
+    "expenses": 174673.60,
+    "left": 124627.72
+  },
+  "categories": [
+    { "category": "Investments", "amount": 118000.00 }
+  ],
+  "note": "Only 1 category visible in list; rest are in subsequent screenshots"
+}

@@ -1,0 +1,119 @@
+name: CI
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+env:
+    NODE_VERSION: "20"
+
+jobs:
+    # ─── Job 1: Lint, Format, Type Check ──────────────────────────────
+    lint:
+        name: Lint & Format
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: "npm"
+
+            - run: npm ci
+
+            - name: ESLint (0 errors expected)
+              run: npx eslint src/
+
+            - name: Prettier check
+              run: npm run format:check
+
+            - name: TypeScript type check
+              run: npx tsc --noEmit
+
+    # ─── Job 2: Vitest (unit + integration) ───────────────────────────
+    test-unit:
+        name: Vitest
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: "npm"
+
+            - run: npm ci
+
+            - name: Run Vitest
+              run: npx vitest run --reporter=verbose
+              env:
+                  NODE_TLS_REJECT_UNAUTHORIZED: "0"
+
+    # ─── Job 3: Playwright E2E ────────────────────────────────────────
+    test-e2e:
+        name: Playwright E2E
+        runs-on: ubuntu-latest
+        needs: [lint] # only run E2E if lint passes
+        env:
+            # Dummy values — E2E tests hit unauthenticated pages only
+            DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
+            AUTH_SECRET: "ci-test-secret-do-not-use-in-production"
+            AUTH_URL: "http://localhost:3000"
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: "npm"
+
+            - run: npm ci
+
+            - name: Install Playwright browsers
+              run: npx playwright install --with-deps chromium
+
+            - name: Build Next.js
+              run: npm run build
+
+            - name: Run Playwright tests
+              run: npx playwright test --reporter=list
+              env:
+                  CI: "true"
+                  NODE_TLS_REJECT_UNAUTHORIZED: "0"
+
+            - name: Upload Playwright report
+              uses: actions/upload-artifact@v4
+              if: ${{ !cancelled() }}
+              with:
+                  name: playwright-report
+                  path: playwright-report/
+                  retention-days: 14
+
+    # ─── Job 4: Build check ───────────────────────────────────────────
+    build:
+        name: Build
+        runs-on: ubuntu-latest
+        needs: [lint, test-unit]
+        env:
+            DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
+            AUTH_SECRET: "ci-test-secret-do-not-use-in-production"
+            AUTH_URL: "http://localhost:3000"
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: "npm"
+
+            - run: npm ci
+
+            - name: Build
+              run: npm run build

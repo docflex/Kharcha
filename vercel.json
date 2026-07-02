@@ -1,0 +1,16 @@
+{
+    "crons": [
+        {
+            "path": "/api/cron/email-reminder",
+            "schedule": "30 3 1 * *"
+        }
+    ],
+    "functions": {
+        "src/app/api/uploads/[id]/process/route.ts": {
+            "maxDuration": 60
+        },
+        "src/app/api/uploads/process-batch/route.ts": {
+            "maxDuration": 60
+        }
+    }
+}

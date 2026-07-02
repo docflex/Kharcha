@@ -1,0 +1,11 @@
+{
+  "categories": [
+    { "category": "Investments", "amount": 70000.00 },
+    { "category": "Rent", "amount": 15000.00 },
+    { "category": "Food", "amount": 9837.00 },
+    { "category": "Groceries", "amount": 5733.50 },
+    { "category": "Electricity", "amount": 1630.00 },
+    { "category": "Rapido", "amount": null, "note": "partially visible ~1202" },
+    { "category": "Services", "amount": null, "note": "partially visible ~1108" }
+  ]
+}

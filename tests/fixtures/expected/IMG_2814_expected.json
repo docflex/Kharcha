@@ -1,0 +1,9 @@
+{
+  "categories": [
+    { "category": "Services", "amount": 1106.00 },
+    { "category": "Gift", "amount": 562.00 },
+    { "category": "Doctor", "amount": 481.00 },
+    { "category": "Entertainment", "amount": 328.00 },
+    { "category": "Shopping", "amount": 320.00 }
+  ]
+}

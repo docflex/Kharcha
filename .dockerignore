@@ -1,0 +1,13 @@
+node_modules
+.next
+.git
+data
+uploads
+coverage
+test-results
+playwright-report
+*.md
+!README.md
+.DS_Store
+.env*
+!.env.local.example

@@ -1,0 +1,16 @@
+{
+  "categories": [
+    { "category": "Investments", "amount": 118000.00 },
+    { "category": "Rent", "amount": 15000.00 },
+    { "category": "Food", "amount": 9932.00 },
+    { "category": "Groceries", "amount": 6989.50 },
+    { "category": "Shopping", "amount": 6459.00 },
+    { "category": "Electronics", "amount": 4317.00 },
+    { "category": "Home Supplies", "amount": 4001.00 },
+    { "category": "Services", "amount": 3241.03 },
+    { "category": "Rapido", "amount": 2131.00 },
+    { "category": "Entertainment", "amount": 1661.00 },
+    { "category": "Taxi", "amount": 1114.45 },
+    { "category": "Doctor", "amount": null, "note": "truncated by FAB ~835" }
+  ]
+}

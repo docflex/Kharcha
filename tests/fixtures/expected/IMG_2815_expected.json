@@ -1,0 +1,16 @@
+{
+  "categories": [
+    { "category": "Investments", "amount": 105012.00 },
+    { "category": "Rent", "amount": 15000.00 },
+    { "category": "Flight", "amount": 11424.00 },
+    { "category": "Food", "amount": 9365.32 },
+    { "category": "Groceries", "amount": 8529.99 },
+    { "category": "Services", "amount": 5925.00 },
+    { "category": "Electronics", "amount": 5058.82 },
+    { "category": "Shopping", "amount": 4173.00 },
+    { "category": "Entertainment", "amount": 2270.46 },
+    { "category": "Rapido", "amount": 2187.00 },
+    { "category": "Electricity", "amount": null, "note": "truncated ~1770" },
+    { "category": "Cinema", "amount": null, "note": "truncated ~1749" }
+  ]
+}

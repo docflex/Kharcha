@@ -1,0 +1,21 @@
+{
+  "categories": [
+    { "category": "Entertainment", "amount": 2255.00 },
+    { "category": "Electricity", "amount": 2170.00 },
+    { "category": "Rapido", "amount": 2039.00 },
+    { "category": "Services", "amount": 1969.42 },
+    { "category": "Gym", "amount": 1449.00 },
+    { "category": "Gift", "amount": 1272.00 },
+    { "category": "Doctor", "amount": 791.90 },
+    { "category": "Cinema", "amount": 392.00 },
+    { "category": "Shopping", "amount": 387.03 }
+  ],
+  "noise_rejected": [
+    "Clothes: ₹170.00",
+    "Electronics: ₹110.00",
+    "Groceries: ₹23.00",
+    "Groceries: ₹16.50",
+    "Clothes: ₹55.00",
+    "Insurance: ₹180.00"
+  ]
+}
