@@ -66,7 +66,12 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
             })
     );
 
-    const [persister] = useState(createPersister);
+    // Defer persister creation until after hydration so the sync cache restore
+    // doesn't cause a mismatch between SSR (loading) and client (cached data).
+    const [persister, setPersister] = useState<ReturnType<typeof createPersister>>(undefined);
+    useEffect(() => {
+        setPersister(createPersister());
+    }, []);
 
     if (!persister) {
         return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;

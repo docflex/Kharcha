@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import Link from "next/link";
 import {
@@ -60,7 +60,13 @@ const item = {
 };
 
 export default function SettingsPage() {
-    const { data: categories = [], isLoading: loading } = useCategories();
+    const { data: categories = [], isLoading: queryLoading } = useCategories();
+
+    // Prevent hydration mismatch from persisted React Query cache
+    const [mounted, setMounted] = useState(false);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    useEffect(() => setMounted(true), []);
+    const loading = !mounted || queryLoading;
     const { data: stats = [] } = useCategoryStats();
     const { format: formatAmount } = useCurrency();
     const [formOpen, setFormOpen] = useState(false);

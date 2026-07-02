@@ -153,18 +153,21 @@ export default function DashboardPage() {
     // Query string for deep-linking to the selected month
     const qs = `year=${year}&month=${month}`;
 
-    // Time-of-day greeting
-    const hour = new Date().getHours();
-    const greeting =
-        hour < 5
-            ? { text: "Burning midnight oil", emoji: "🌙" }
-            : hour < 12
-              ? { text: "Good morning", emoji: "☀️" }
-              : hour < 17
-                ? { text: "Good afternoon", emoji: "🌤️" }
-                : hour < 21
-                  ? { text: "Good evening", emoji: "🌅" }
-                  : { text: "Winding down", emoji: "🌙" };
+    // Time-of-day greeting — only compute after mount to avoid hydration mismatch
+    const greeting = mounted
+        ? (() => {
+              const hour = new Date().getHours();
+              return hour < 5
+                  ? { text: "Burning midnight oil", emoji: "🌙" }
+                  : hour < 12
+                    ? { text: "Good morning", emoji: "☀️" }
+                    : hour < 17
+                      ? { text: "Good afternoon", emoji: "🌤️" }
+                      : hour < 21
+                        ? { text: "Good evening", emoji: "🌅" }
+                        : { text: "Winding down", emoji: "🌙" };
+          })()
+        : { text: "Welcome", emoji: "👋" };
 
     // Stable formatter for AnimatedCounter
     const stableFormat = useCallback(
