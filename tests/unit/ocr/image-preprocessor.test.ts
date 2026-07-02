@@ -76,16 +76,20 @@ describe("Image Preprocessor", () => {
             expect(result.buffer.length).toBeGreaterThan(0);
         });
 
-        it("works with different screenshot types (all 9 fixtures)", {timeout: 30_000 }, async () => {
-            const files = fs.readdirSync(FIXTURES_DIR).filter((f) => f.endsWith(".PNG"));
-            expect(files.length).toBe(9);
+        it(
+            "works with different screenshot types (all 9 fixtures)",
+            { timeout: 30_000 },
+            async () => {
+                const files = fs.readdirSync(FIXTURES_DIR).filter((f) => f.endsWith(".PNG"));
+                expect(files.length).toBe(9);
 
-            for (const file of files) {
-                const result = await preprocessImage(fixturePath(file));
-                expect(result.buffer).toBeInstanceOf(Buffer);
-                expect(result.buffer.length).toBeGreaterThan(0);
+                for (const file of files) {
+                    const result = await preprocessImage(fixturePath(file));
+                    expect(result.buffer).toBeInstanceOf(Buffer);
+                    expect(result.buffer.length).toBeGreaterThan(0);
+                }
             }
-        });
+        );
 
         it("respects custom preprocessing options", async () => {
             const result = await preprocessImage(fixturePath("IMG_2806.PNG"), {
