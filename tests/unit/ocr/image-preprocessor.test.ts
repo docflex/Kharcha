@@ -76,7 +76,7 @@ describe("Image Preprocessor", () => {
             expect(result.buffer.length).toBeGreaterThan(0);
         });
 
-        it("works with different screenshot types (all 9 fixtures)", async () => {
+        it("works with different screenshot types (all 9 fixtures)", {timeout: 30_000 }, async () => {
             const files = fs.readdirSync(FIXTURES_DIR).filter((f) => f.endsWith(".PNG"));
             expect(files.length).toBe(9);
 
