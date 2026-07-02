@@ -6,6 +6,12 @@ import { v4 as uuid } from "uuid";
 import { exportToExcel, type ExportData } from "@/lib/export/excel";
 import ExcelJS from "exceljs";
 
+// ExcelJS types expect the legacy Buffer type; Node 22+ returns Buffer<ArrayBufferLike>
+async function loadBuffer(wb: ExcelJS.Workbook, buf: Buffer) {
+    // @ts-expect-error — Buffer<ArrayBufferLike> is compatible at runtime
+    return wb.xlsx.load(buf);
+}
+
 let testDb: Awaited<ReturnType<typeof createTestDb>>;
 let userId: string;
 let foodCatId: string;
@@ -64,7 +70,7 @@ describe("Excel Export", () => {
 
         const buffer = await exportToExcel(data);
         const workbook = new ExcelJS.Workbook();
-        await workbook.xlsx.load(buffer);
+        await loadBuffer(workbook, buffer);
 
         const sheet = workbook.getWorksheet("Monthly Input");
         expect(sheet).toBeDefined();
@@ -87,7 +93,7 @@ describe("Excel Export", () => {
 
         const buffer = await exportToExcel(data);
         const workbook = new ExcelJS.Workbook();
-        await workbook.xlsx.load(buffer);
+        await loadBuffer(workbook, buffer);
 
         const sheet = workbook.getWorksheet("Monthly Input")!;
         // Row 1 = header, rows 2-3 = data
@@ -109,7 +115,7 @@ describe("Excel Export", () => {
 
         const buffer = await exportToExcel(data);
         const workbook = new ExcelJS.Workbook();
-        await workbook.xlsx.load(buffer);
+        await loadBuffer(workbook, buffer);
 
         const summary = workbook.getWorksheet("Summary");
         expect(summary).toBeDefined();
@@ -123,7 +129,7 @@ describe("Excel Export", () => {
         expect(buffer).toBeInstanceOf(Buffer);
 
         const workbook = new ExcelJS.Workbook();
-        await workbook.xlsx.load(buffer);
+        await loadBuffer(workbook, buffer);
         const sheet = workbook.getWorksheet("Monthly Input");
         expect(sheet).toBeDefined();
     });
@@ -139,7 +145,7 @@ describe("Excel Export", () => {
 
         const buffer = await exportToExcel(data);
         const workbook = new ExcelJS.Workbook();
-        await workbook.xlsx.load(buffer);
+        await loadBuffer(workbook, buffer);
 
         const sheet = workbook.getWorksheet("Monthly Input")!;
         // Should be sorted: 2025/12, 2026/1, 2026/2
