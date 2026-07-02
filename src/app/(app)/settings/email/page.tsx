@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, Fragment } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
     Mail,
@@ -41,8 +41,14 @@ const item = {
 
 export default function EmailSettingsPage() {
     const { data: status = null } = useEmailStatus();
-    const { data: logs = [], isLoading: loading } = useEmailLog();
+    const { data: logs = [], isLoading: queryLoading } = useEmailLog();
     const sendTestEmail = useSendTestEmail();
+
+    // Prevent hydration mismatch from persisted React Query cache
+    const [mounted, setMounted] = useState(false);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    useEffect(() => setMounted(true), []);
+    const loading = !mounted || queryLoading;
 
     // EM5: Monthly reminder toggle (client-side state)
     const [remindersEnabled, setRemindersEnabled] = useState(true);
@@ -281,9 +287,8 @@ export default function EmailSettingsPage() {
                                 </TableHeader>
                                 <TableBody>
                                     {logs.map((log) => (
-                                        <>
+                                        <Fragment key={log.id}>
                                             <TableRow
-                                                key={log.id}
                                                 className="hover:bg-muted/30 transition-colors cursor-pointer"
                                                 onClick={() =>
                                                     setExpandedLogId(
@@ -396,7 +401,7 @@ export default function EmailSettingsPage() {
                                                     </TableCell>
                                                 </TableRow>
                                             )}
-                                        </>
+                                        </Fragment>
                                     ))}
                                 </TableBody>
                             </Table>

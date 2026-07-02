@@ -478,8 +478,8 @@ export default function IncomePage() {
                                             fontSize: "11px",
                                             fontFamily: "var(--font-mono)",
                                         }}
-                                        formatter={(value: number) => [
-                                            formatAmount(value),
+                                        formatter={(value) => [
+                                            formatAmount(Number(value)),
                                             "Income",
                                         ]}
                                     />

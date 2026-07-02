@@ -30,6 +30,15 @@ import {
     Building,
     Landmark,
     CreditCard,
+    TrendingUp,
+    Lamp,
+    Bike,
+    HeartPulse,
+    Bed,
+    Shirt,
+    MoreHorizontal,
+    Phone,
+    Shield,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -63,6 +72,15 @@ export const CATEGORY_ICONS: { name: string; icon: LucideIcon }[] = [
     { name: "building", icon: Building },
     { name: "landmark", icon: Landmark },
     { name: "credit-card", icon: CreditCard },
+    { name: "trending-up", icon: TrendingUp },
+    { name: "lamp", icon: Lamp },
+    { name: "bike", icon: Bike },
+    { name: "heart-pulse", icon: HeartPulse },
+    { name: "bed", icon: Bed },
+    { name: "shirt", icon: Shirt },
+    { name: "more-horizontal", icon: MoreHorizontal },
+    { name: "phone", icon: Phone },
+    { name: "shield", icon: Shield },
 ];
 
 const ICON_MAP = new Map(CATEGORY_ICONS.map((i) => [i.name, i.icon]));

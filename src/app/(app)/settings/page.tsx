@@ -14,6 +14,7 @@ import {
     BarChart3,
     TrendingUp,
     UserCircle,
+    Mail,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -273,7 +274,7 @@ export default function SettingsPage() {
             </motion.div>
 
             {/* Quick Links */}
-            <motion.div variants={item} className="grid gap-2 sm:grid-cols-3">
+            <motion.div variants={item} className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
                 <Link
                     href="/settings/profile"
                     className="flex items-center justify-between rounded-lg border-2 border-border bg-card p-4 shadow-[3px_3px_0px_0px] shadow-border/50 hover:border-primary transition-colors group"
@@ -306,6 +307,26 @@ export default function SettingsPage() {
                             </p>
                             <p className="text-xs text-muted-foreground">
                                 Set monthly spending limits
+                            </p>
+                        </div>
+                    </div>
+                    <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                </Link>
+
+                <Link
+                    href="/settings/email"
+                    className="flex items-center justify-between rounded-lg border-2 border-border bg-card p-4 shadow-[3px_3px_0px_0px] shadow-border/50 hover:border-primary transition-colors group"
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-md bg-amber-500/10 border border-amber-500/20">
+                            <Mail className="h-4 w-4 text-amber-500" strokeWidth={2.5} />
+                        </div>
+                        <div>
+                            <p className="font-bold text-sm group-hover:text-primary transition-colors">
+                                Email Reminders
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                                Weekly & monthly reports
                             </p>
                         </div>
                     </div>
