@@ -14,7 +14,7 @@ import { Sun, Moon, ArrowRight } from "lucide-react";
 export default function LoginPage() {
     return (
         <Suspense>
-            <LoginContent/>
+            <LoginContent />
         </Suspense>
     );
 }

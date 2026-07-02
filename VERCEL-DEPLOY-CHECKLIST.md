@@ -11,17 +11,18 @@
 - [ ] Create account at [neon.tech](https://neon.tech) (sign up with GitHub)
 - [ ] Create project: name `kharcha`, region `ap-south-1` (India) or closest to you
 - [ ] Copy the **pooled** connection string (hostname contains `-pooler`)
-  ```
-  postgres://user:pass@ep-xyz-123-pooler.ap-south-1.aws.neon.tech/kharcha?sslmode=require
-  ```
+    ```
+    postgres://user:pass@ep-xyz-123-pooler.ap-south-1.aws.neon.tech/kharcha?sslmode=require
+    ```
 - [ ] Save locally in `.env.local` as `DATABASE_URL`
 - [ ] Push schema to Neon:
-  ```bash
-  NODE_TLS_REJECT_UNAUTHORIZED=0 node scripts/push-schema.mjs
-  ```
+    ```bash
+    NODE_TLS_REJECT_UNAUTHORIZED=0 node scripts/push-schema.mjs
+    ```
 - [ ] Verify all 16 tables + indexes created (check Neon Console → SQL Editor → `\dt`)
 
 > **Known gap:** `audit_log` table is missing from `push-schema.mjs`. You must add it manually before deploying, or run this SQL in Neon Console:
+>
 > ```sql
 > CREATE TABLE IF NOT EXISTS "audit_log" (
 >     "id" text PRIMARY KEY,
@@ -39,42 +40,42 @@
 - [ ] Enable **OAuth consent screen**: External, app name `Kharcha`
 - [ ] Add scopes: `openid`, `email`, `profile`
 - [ ] Create **OAuth client ID** (Web application):
-  - Authorized JS origins: `http://localhost:3000`
-  - Authorized redirect URIs: `http://localhost:3000/api/auth/callback/google`
-  - *(You'll add the Vercel URL to both after first deploy)*
+    - Authorized JS origins: `http://localhost:3000`
+    - Authorized redirect URIs: `http://localhost:3000/api/auth/callback/google`
+    - _(You'll add the Vercel URL to both after first deploy)_
 - [ ] Copy **Client ID** and **Client Secret**
 - [ ] Save in `.env.local`:
-  ```env
-  GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
-  GOOGLE_CLIENT_SECRET=GOCSPX-your-secret
-  ```
+    ```env
+    GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
+    GOOGLE_CLIENT_SECRET=GOCSPX-your-secret
+    ```
 - [ ] Publish the app (OAuth consent screen → Audience → Publish)
 
 ### 1.3 — Gmail SMTP (for email notifications)
 
 - [ ] Enable 2-Step Verification on your Google Account
 - [ ] Generate App Password at [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
-  - App name: `Kharcha`
-  - Copy the 16-char password immediately
+    - App name: `Kharcha`
+    - Copy the 16-char password immediately
 - [ ] Save in `.env.local`:
-  ```env
-  SMTP_HOST=smtp.gmail.com
-  SMTP_PORT=587
-  SMTP_USER=your-email@gmail.com
-  SMTP_PASS=abcdefghijklmnop
-  EMAIL_FROM="Kharcha <your-email@gmail.com>"
-  ```
+    ```env
+    SMTP_HOST=smtp.gmail.com
+    SMTP_PORT=587
+    SMTP_USER=your-email@gmail.com
+    SMTP_PASS=abcdefghijklmnop
+    EMAIL_FROM="Kharcha <your-email@gmail.com>"
+    ```
 
 ### 1.4 — Generate Secrets
 
 - [ ] Generate `AUTH_SECRET`:
-  ```bash
-  openssl rand -base64 32
-  ```
+    ```bash
+    openssl rand -base64 32
+    ```
 - [ ] Generate `CRON_SECRET`:
-  ```bash
-  openssl rand -base64 32
-  ```
+    ```bash
+    openssl rand -base64 32
+    ```
 - [ ] Save both in `.env.local`
 
 ---
@@ -84,25 +85,25 @@
 ### 2.1 — Tests
 
 - [ ] Run Vitest (expect 847+ passing):
-  ```bash
-  NODE_TLS_REJECT_UNAUTHORIZED=0 npx vitest run
-  ```
+    ```bash
+    NODE_TLS_REJECT_UNAUTHORIZED=0 npx vitest run
+    ```
 - [ ] Run ESLint (expect 0 errors):
-  ```bash
-  npx eslint src/
-  ```
+    ```bash
+    npx eslint src/
+    ```
 - [ ] Run Prettier check:
-  ```bash
-  npm run format:check
-  ```
+    ```bash
+    npm run format:check
+    ```
 
 ### 2.2 — Local Build
 
 - [ ] Verify build succeeds with production env vars:
-  ```bash
-  npm run build
-  ```
-  If it fails, fix errors before proceeding.
+    ```bash
+    npm run build
+    ```
+    If it fails, fix errors before proceeding.
 
 ### 2.3 — Local Smoke Test (Against Neon)
 
@@ -123,16 +124,16 @@
 - [ ] Initialize git (if not already): `git init`
 - [ ] Ensure `.gitignore` excludes: `.env*`, `node_modules/`, `.next/`, `/data/`, `/uploads/`
 - [ ] Verify no secrets in tracked files:
-  ```bash
-  git grep -i "password\|secret\|smtp_pass" -- ':!*.md' ':!*.example' ':!*.test.*'
-  ```
+    ```bash
+    git grep -i "password\|secret\|smtp_pass" -- ':!*.md' ':!*.example' ':!*.test.*'
+    ```
 - [ ] Create GitHub repo (public or private)
 - [ ] Push:
-  ```bash
-  git add -A
-  git commit -m "Ready for Vercel deployment"
-  git push -u origin main
-  ```
+    ```bash
+    git add -A
+    git commit -m "Ready for Vercel deployment"
+    git push -u origin main
+    ```
 
 ### 3.2 — CI Pipeline (Optional but Recommended)
 
@@ -155,19 +156,19 @@
 
 Add ALL of these in the Vercel dashboard **before clicking Deploy**:
 
-| Variable | Value | Notes |
-|----------|-------|-------|
-| `DATABASE_URL` | `postgres://...neon.tech/kharcha?sslmode=require` | Use **pooled** connection string |
-| `AUTH_SECRET` | *(from step 1.4)* | |
-| `AUTH_URL` | `https://your-project.vercel.app` | Will update after first deploy |
-| `GOOGLE_CLIENT_ID` | *(from step 1.2)* | |
-| `GOOGLE_CLIENT_SECRET` | *(from step 1.2)* | |
-| `SMTP_HOST` | `smtp.gmail.com` | |
-| `SMTP_PORT` | `587` | |
-| `SMTP_USER` | `your-email@gmail.com` | |
-| `SMTP_PASS` | *(16-char app password)* | |
-| `EMAIL_FROM` | `Kharcha <your-email@gmail.com>` | |
-| `CRON_SECRET` | *(from step 1.4)* | |
+| Variable               | Value                                             | Notes                            |
+| ---------------------- | ------------------------------------------------- | -------------------------------- |
+| `DATABASE_URL`         | `postgres://...neon.tech/kharcha?sslmode=require` | Use **pooled** connection string |
+| `AUTH_SECRET`          | _(from step 1.4)_                                 |                                  |
+| `AUTH_URL`             | `https://your-project.vercel.app`                 | Will update after first deploy   |
+| `GOOGLE_CLIENT_ID`     | _(from step 1.2)_                                 |                                  |
+| `GOOGLE_CLIENT_SECRET` | _(from step 1.2)_                                 |                                  |
+| `SMTP_HOST`            | `smtp.gmail.com`                                  |                                  |
+| `SMTP_PORT`            | `587`                                             |                                  |
+| `SMTP_USER`            | `your-email@gmail.com`                            |                                  |
+| `SMTP_PASS`            | _(16-char app password)_                          |                                  |
+| `EMAIL_FROM`           | `Kharcha <your-email@gmail.com>`                  |                                  |
+| `CRON_SECRET`          | _(from step 1.4)_                                 |                                  |
 
 - [ ] All 11 env vars added
 - [ ] Env vars set for **Production** environment (and optionally Preview/Development)
@@ -184,8 +185,8 @@ These must be done immediately after first deploy:
 
 - [ ] **Vercel env vars**: Update `AUTH_URL` to your actual Vercel URL
 - [ ] **Google Cloud Console**: Add Vercel URL to OAuth client:
-  - Authorized JS origins: `https://your-project.vercel.app`
-  - Authorized redirect URIs: `https://your-project.vercel.app/api/auth/callback/google`
+    - Authorized JS origins: `https://your-project.vercel.app`
+    - Authorized redirect URIs: `https://your-project.vercel.app/api/auth/callback/google`
 - [ ] **Redeploy** from Vercel dashboard: Deployments → latest → `...` → Redeploy
 
 ---
@@ -196,15 +197,15 @@ These must be done immediately after first deploy:
 
 - [ ] Landing page loads: `https://your-project.vercel.app`
 - [ ] Security headers present:
-  ```bash
-  curl -I https://your-project.vercel.app
-  ```
-  Expect: `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Content-Security-Policy`
+    ```bash
+    curl -I https://your-project.vercel.app
+    ```
+    Expect: `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Content-Security-Policy`
 - [ ] Auth providers respond:
-  ```bash
-  curl https://your-project.vercel.app/api/auth/providers
-  ```
-  Expect JSON with `google` and `credentials`
+    ```bash
+    curl https://your-project.vercel.app/api/auth/providers
+    ```
+    Expect JSON with `google` and `credentials`
 
 ### 5.2 — Auth Flows
 
@@ -263,9 +264,9 @@ These must be done immediately after first deploy:
 
 - [ ] Monitor Neon storage usage (free tier: 512MB)
 - [ ] Monitor Vercel usage:
-  - Serverless function invocations (Hobby: 100K/month)
-  - Bandwidth (Hobby: 100GB/month)
-  - Build minutes (Hobby: 6,000 min/month)
+    - Serverless function invocations (Hobby: 100K/month)
+    - Bandwidth (Hobby: 100GB/month)
+    - Build minutes (Hobby: 6,000 min/month)
 - [ ] Cron job runs on 1st of every month at 3:30 AM UTC (9:00 AM IST)
 - [ ] Neon DB auto-suspends after 5 min inactivity (cold start ~1-2s on first request)
 - [ ] Keep dependencies updated: `npm outdated` → `npm update`
@@ -274,16 +275,16 @@ These must be done immediately after first deploy:
 
 ## Quick Troubleshooting Reference
 
-| Problem | Fix |
-|---------|-----|
-| `redirect_uri_mismatch` | Add exact Vercel URL to Google OAuth redirect URIs (no trailing slash) |
-| `Function execution timed out` (OCR) | Already configured: 60s max in `vercel.json` |
-| `Too many connections` (Neon) | Use the **pooled** connection string (hostname has `-pooler`) |
-| `SMTP connection failed` | Verify 2FA enabled, App Password correct (16 chars, no spaces) |
-| `sharp` build error | Already handled: `serverExternalPackages: ["sharp"]` in `next.config.ts` |
-| `Module not found: better-sqlite3` | Grep codebase — all imports should use `@neondatabase/serverless` |
-| Cold start slow | Normal for Neon free tier — first request after inactivity takes ~1-2s |
-| Build fails on Vercel | Run `npm run build` locally first to catch errors |
+| Problem                              | Fix                                                                      |
+| ------------------------------------ | ------------------------------------------------------------------------ |
+| `redirect_uri_mismatch`              | Add exact Vercel URL to Google OAuth redirect URIs (no trailing slash)   |
+| `Function execution timed out` (OCR) | Already configured: 60s max in `vercel.json`                             |
+| `Too many connections` (Neon)        | Use the **pooled** connection string (hostname has `-pooler`)            |
+| `SMTP connection failed`             | Verify 2FA enabled, App Password correct (16 chars, no spaces)           |
+| `sharp` build error                  | Already handled: `serverExternalPackages: ["sharp"]` in `next.config.ts` |
+| `Module not found: better-sqlite3`   | Grep codebase — all imports should use `@neondatabase/serverless`        |
+| Cold start slow                      | Normal for Neon free tier — first request after inactivity takes ~1-2s   |
+| Build fails on Vercel                | Run `npm run build` locally first to catch errors                        |
 
 ---
 
