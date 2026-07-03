@@ -1,9 +1,20 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "motion/react";
-import { Plus, AlertCircle, Download, FileSpreadsheet, Trash2, Tag, X } from "lucide-react";
+import {
+    Plus,
+    AlertCircle,
+    Download,
+    FileSpreadsheet,
+    Trash2,
+    Tag,
+    X,
+    ChevronLeft,
+    ChevronRight,
+} from "lucide-react";
+import { monthNumberToName } from "@/lib/utils/dates";
 import { AnimatePresence } from "motion/react";
 import { toast } from "sonner";
 import { useAppStore } from "@/stores/app-store";
@@ -53,6 +64,7 @@ export default function ExpensesPage() {
         const p = searchParams.get("month");
         return p ? Number(p) : globalStore.month;
     });
+    const direction = useRef(0);
     const [source, setSource] = useState<string | null>(null);
     const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
@@ -235,14 +247,19 @@ export default function ExpensesPage() {
     }
 
     return (
-        <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
-            {/* Header */}
+        <motion.div
+            variants={container}
+            initial="hidden"
+            animate="show"
+            className="space-y-3 md:space-y-6"
+        >
+            {/* Header — hidden on mobile (bottom nav + FAB cover it) */}
             <motion.div
                 variants={item}
-                className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+                className="hidden sm:flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
             >
                 <div>
-                    <h1 className="text-3xl font-black tracking-tight uppercase md:text-4xl">
+                    <h1 className="text-2xl font-black tracking-tight uppercase md:text-4xl">
                         Expenses
                     </h1>
                     <p className="text-sm font-mono text-muted-foreground mt-1">
@@ -285,6 +302,9 @@ export default function ExpensesPage() {
                     availableYears={availableYears}
                     onYearChange={setYear}
                     onMonthChange={setMonth}
+                    onNavigate={(dir) => {
+                        direction.current = dir;
+                    }}
                     onSourceChange={setSource}
                     onCategoryChange={setCategoryFilter}
                     onSearchChange={setSearchQuery}
@@ -303,21 +323,30 @@ export default function ExpensesPage() {
             )}
 
             {/* Table */}
-            <motion.div variants={item} data-tour="expense-table">
-                <ExpenseTable
-                    expenses={rows}
-                    categories={categories}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                    onInlineEdit={handleInlineEdit}
-                    loading={loading}
-                    sortColumn={sortColumn}
-                    sortDirection={sortDirection}
-                    onSort={handleSort}
-                    selectedIds={selectedIds}
-                    onSelectionChange={setSelectedIds}
-                />
-            </motion.div>
+            <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                    key={`${year}-${month}`}
+                    data-tour="expense-table"
+                    initial={{ opacity: 0, x: direction.current * 40 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: direction.current * -40 }}
+                    transition={{ duration: 0.2, ease: "easeInOut" }}
+                >
+                    <ExpenseTable
+                        expenses={rows}
+                        categories={categories}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                        onInlineEdit={handleInlineEdit}
+                        loading={loading}
+                        sortColumn={sortColumn}
+                        sortDirection={sortDirection}
+                        onSort={handleSort}
+                        selectedIds={selectedIds}
+                        onSelectionChange={setSelectedIds}
+                    />
+                </motion.div>
+            </AnimatePresence>
 
             {/* Floating Bulk Action Bar */}
             <AnimatePresence>
@@ -326,7 +355,7 @@ export default function ExpensesPage() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 20 }}
-                        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 rounded-lg border-2 border-border bg-card px-4 py-3 shadow-[4px_4px_0px_0px] shadow-border/50"
+                        className="fixed bottom-[7.5rem] md:bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 rounded-lg border-2 border-border bg-card px-4 py-3 shadow-[4px_4px_0px_0px] shadow-border/50"
                     >
                         <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">
                             {selectedIds.size} selected
@@ -400,6 +429,47 @@ export default function ExpensesPage() {
                 onSubmit={editingExpense ? handleEditExpense : handleAddExpense}
             />
             {confirmDialog}
+
+            {/* Mobile fixed bottom month nav — thumb zone (hidden when bulk selecting) */}
+            {selectedIds.size === 0 && (
+                <div className="md:hidden fixed bottom-[3.5rem] left-0 right-0 z-40 flex items-center justify-center gap-3 border-t-2 border-border bg-background px-4 py-2 shadow-[0_-2px_8px_0px] shadow-black/20">
+                    <button
+                        onClick={() => {
+                            if (month === null) return;
+                            direction.current = -1;
+                            if (month === 1) {
+                                setMonth(12);
+                                setYear(year - 1);
+                            } else {
+                                setMonth(month - 1);
+                            }
+                        }}
+                        disabled={month === null}
+                        className="rounded-md border-2 border-border bg-background p-2 hover:bg-accent transition-colors shadow-[2px_2px_0px_0px] shadow-border/50 active:shadow-none active:translate-x-[2px] active:translate-y-[2px] disabled:opacity-30"
+                    >
+                        <ChevronLeft className="h-4 w-4" strokeWidth={2.5} />
+                    </button>
+                    <span className="font-mono font-bold text-sm min-w-[100px] text-center">
+                        {month ? monthNumberToName(month, "short") : "All"} {year}
+                    </span>
+                    <button
+                        onClick={() => {
+                            if (month === null) return;
+                            direction.current = 1;
+                            if (month === 12) {
+                                setMonth(1);
+                                setYear(year + 1);
+                            } else {
+                                setMonth(month + 1);
+                            }
+                        }}
+                        disabled={month === null}
+                        className="rounded-md border-2 border-border bg-background p-2 hover:bg-accent transition-colors shadow-[2px_2px_0px_0px] shadow-border/50 active:shadow-none active:translate-x-[2px] active:translate-y-[2px] disabled:opacity-30"
+                    >
+                        <ChevronRight className="h-4 w-4" strokeWidth={2.5} />
+                    </button>
+                </div>
+            )}
         </motion.div>
     );
 }

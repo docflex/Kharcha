@@ -83,7 +83,18 @@ export function Sparkline({
                             onMouseEnter={() => setHoveredIdx(i)}
                         />
                         {hoveredIdx === i && (
-                            <circle cx={c.x} cy={c.y} r={3} fill={color} opacity={0.8} />
+                            <>
+                                <line
+                                    x1={c.x}
+                                    y1={0}
+                                    x2={c.x}
+                                    y2={height}
+                                    stroke={color}
+                                    strokeWidth={0.5}
+                                    opacity={0.3}
+                                />
+                                <circle cx={c.x} cy={c.y} r={3} fill={color} opacity={0.8} />
+                            </>
                         )}
                     </g>
                 ))}
@@ -91,7 +102,7 @@ export function Sparkline({
 
             {/* Tooltip */}
             {hoveredIdx !== null && (
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 whitespace-nowrap rounded-md border-2 border-border bg-card px-2 py-1 shadow-lg z-50 pointer-events-none">
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 whitespace-nowrap rounded-md border-2 border-border bg-card px-2 py-1 shadow-[2px_2px_0px_0px] shadow-border/50 z-50 pointer-events-none">
                     <p className="text-[10px] font-mono font-bold">{fmt(data[hoveredIdx])}</p>
                     {labels?.[hoveredIdx] && (
                         <p className="text-[9px] text-muted-foreground font-mono">

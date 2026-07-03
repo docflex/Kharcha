@@ -22,8 +22,19 @@ import {
     DialogClose,
 } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Sun, Moon, Settings, LogOut, ArrowLeftRight, Loader2, AlertTriangle } from "lucide-react";
+import {
+    Sun,
+    Moon,
+    Settings,
+    LogOut,
+    ArrowLeftRight,
+    Loader2,
+    AlertTriangle,
+    Eye,
+    EyeOff,
+} from "lucide-react";
 import { useCurrency } from "@/contexts/currency-context";
+import { useAppStore } from "@/stores/app-store";
 import { SUPPORTED_CURRENCIES } from "@/lib/constants";
 
 interface HeaderProps {
@@ -37,6 +48,7 @@ interface HeaderProps {
 export function Header({ user }: HeaderProps) {
     const { setTheme, theme } = useTheme();
     const { currency, setCurrency, loading: ratesLoading, error: ratesError } = useCurrency();
+    const { privacyMode, togglePrivacy } = useAppStore();
     const [signOutOpen, setSignOutOpen] = useState(false);
     const currentCurrency = SUPPORTED_CURRENCIES.find((c) => c.code === currency);
 
@@ -108,6 +120,28 @@ export function Header({ user }: HeaderProps) {
                         })}
                     </DropdownMenuContent>
                 </DropdownMenu>
+
+                {/* Privacy toggle */}
+                <Button
+                    variant="outline"
+                    size="icon"
+                    className={`h-8 w-8 border-2 ${
+                        privacyMode
+                            ? "border-amber-500 bg-amber-500/10 hover:bg-amber-500/20"
+                            : "border-border"
+                    }`}
+                    onClick={togglePrivacy}
+                    title={
+                        privacyMode ? "Privacy mode on — click to reveal" : "Click to hide amounts"
+                    }
+                >
+                    {privacyMode ? (
+                        <EyeOff className="h-4 w-4 text-amber-500" />
+                    ) : (
+                        <Eye className="h-4 w-4" />
+                    )}
+                    <span className="sr-only">Toggle privacy</span>
+                </Button>
 
                 {/* Theme toggle */}
                 <Button

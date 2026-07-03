@@ -9,7 +9,6 @@ import {
     Pencil,
     Target,
     ListTree,
-    ArrowRight,
     Compass,
     BarChart3,
     TrendingUp,
@@ -211,42 +210,36 @@ export default function SettingsPage() {
         return (
             <div
                 key={cat.id}
-                className="flex items-center justify-between rounded-md border-2 border-border bg-card px-3 py-2.5 group hover:border-primary/50 transition-colors overflow-hidden relative"
+                className="flex items-center gap-2 rounded-md border-2 border-border bg-card px-2.5 py-2 group hover:border-primary/50 transition-colors overflow-hidden relative"
                 style={
-                    cat.color ? { borderLeftColor: cat.color, borderLeftWidth: "4px" } : undefined
+                    cat.color ? { borderLeftColor: cat.color, borderLeftWidth: "3px" } : undefined
                 }
             >
-                <div className="flex items-center gap-2 min-w-0 flex-1">
-                    {(() => {
-                        const Icon = getCategoryIcon(cat.icon);
-                        return Icon ? (
-                            <div
-                                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border"
-                                style={
-                                    cat.color
-                                        ? { borderColor: cat.color, color: cat.color }
-                                        : undefined
-                                }
-                            >
-                                <Icon className="h-3.5 w-3.5" />
-                            </div>
-                        ) : cat.color ? (
-                            <span
-                                className="h-3 w-3 shrink-0 rounded-full"
-                                style={{ backgroundColor: cat.color }}
-                            />
-                        ) : null;
-                    })()}
-                    <div className="min-w-0">
-                        <span className="text-sm font-medium truncate block">{cat.name}</span>
-                        {stat && stat.count > 0 && (
-                            <span className="text-[10px] text-muted-foreground font-mono">
-                                {stat.count} {stat.count === 1 ? "entry" : "entries"}
-                            </span>
-                        )}
-                    </div>
-                </div>
-                <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                {(() => {
+                    const Icon = getCategoryIcon(cat.icon);
+                    return Icon ? (
+                        <div
+                            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border"
+                            style={
+                                cat.color ? { borderColor: cat.color, color: cat.color } : undefined
+                            }
+                        >
+                            <Icon className="h-3.5 w-3.5" />
+                        </div>
+                    ) : cat.color ? (
+                        <span
+                            className="h-3 w-3 shrink-0 rounded-full"
+                            style={{ backgroundColor: cat.color }}
+                        />
+                    ) : null;
+                })()}
+                <span className="text-xs font-medium truncate flex-1 min-w-0">{cat.name}</span>
+                {stat && stat.count > 0 && (
+                    <span className="text-[9px] text-muted-foreground font-mono shrink-0 bg-muted px-1 py-0.5 rounded">
+                        {stat.count}
+                    </span>
+                )}
+                <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 absolute right-1 top-1/2 -translate-y-1/2 bg-card/90">
                     <Button
                         variant="ghost"
                         size="icon-xs"
@@ -280,63 +273,56 @@ export default function SettingsPage() {
             </motion.div>
 
             {/* Quick Links */}
-            <motion.div variants={item} className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+            <motion.div variants={item} className="grid grid-cols-2 gap-2 lg:grid-cols-4">
                 <Link
                     href="/settings/profile"
-                    className="flex items-center justify-between rounded-lg border-2 border-border bg-card p-4 shadow-[3px_3px_0px_0px] shadow-border/50 hover:border-primary transition-colors group"
+                    className="flex items-center gap-2.5 rounded-lg border-2 border-border bg-card p-3 shadow-[3px_3px_0px_0px] shadow-border/50 hover:border-primary transition-colors group"
                 >
-                    <div className="flex items-center gap-3">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-md bg-green-500/10 border border-green-500/20">
-                            <UserCircle className="h-4 w-4 text-green-500" strokeWidth={2.5} />
-                        </div>
-                        <div>
-                            <p className="font-bold text-sm group-hover:text-primary transition-colors">
-                                Profile
-                            </p>
-                            <p className="text-xs text-muted-foreground">Account & preferences</p>
-                        </div>
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-green-500/10 border border-green-500/20">
+                        <UserCircle className="h-4 w-4 text-green-500" strokeWidth={2.5} />
                     </div>
-                    <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                    <div className="min-w-0">
+                        <p className="font-bold text-xs group-hover:text-primary transition-colors">
+                            Profile
+                        </p>
+                        <p className="text-[10px] text-muted-foreground truncate">
+                            Account & preferences
+                        </p>
+                    </div>
                 </Link>
 
                 <Link
                     href="/settings/budgets"
-                    className="flex items-center justify-between rounded-lg border-2 border-border bg-card p-4 shadow-[3px_3px_0px_0px] shadow-border/50 hover:border-primary transition-colors group"
+                    className="flex items-center gap-2.5 rounded-lg border-2 border-border bg-card p-3 shadow-[3px_3px_0px_0px] shadow-border/50 hover:border-primary transition-colors group"
                 >
-                    <div className="flex items-center gap-3">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-md bg-blue-500/10 border border-blue-500/20">
-                            <Target className="h-4 w-4 text-blue-500" strokeWidth={2.5} />
-                        </div>
-                        <div>
-                            <p className="font-bold text-sm group-hover:text-primary transition-colors">
-                                Budget Targets
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                                Set monthly spending limits
-                            </p>
-                        </div>
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-blue-500/10 border border-blue-500/20">
+                        <Target className="h-4 w-4 text-blue-500" strokeWidth={2.5} />
                     </div>
-                    <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                    <div className="min-w-0">
+                        <p className="font-bold text-xs group-hover:text-primary transition-colors">
+                            Budget Targets
+                        </p>
+                        <p className="text-[10px] text-muted-foreground truncate">
+                            Spending limits
+                        </p>
+                    </div>
                 </Link>
 
                 <Link
                     href="/settings/email"
-                    className="flex items-center justify-between rounded-lg border-2 border-border bg-card p-4 shadow-[3px_3px_0px_0px] shadow-border/50 hover:border-primary transition-colors group"
+                    className="flex items-center gap-2.5 rounded-lg border-2 border-border bg-card p-3 shadow-[3px_3px_0px_0px] shadow-border/50 hover:border-primary transition-colors group"
                 >
-                    <div className="flex items-center gap-3">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-md bg-amber-500/10 border border-amber-500/20">
-                            <Mail className="h-4 w-4 text-amber-500" strokeWidth={2.5} />
-                        </div>
-                        <div>
-                            <p className="font-bold text-sm group-hover:text-primary transition-colors">
-                                Email Reminders
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                                Weekly & monthly reports
-                            </p>
-                        </div>
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-amber-500/10 border border-amber-500/20">
+                        <Mail className="h-4 w-4 text-amber-500" strokeWidth={2.5} />
                     </div>
-                    <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                    <div className="min-w-0">
+                        <p className="font-bold text-xs group-hover:text-primary transition-colors">
+                            Email Reminders
+                        </p>
+                        <p className="text-[10px] text-muted-foreground truncate">
+                            Weekly & monthly
+                        </p>
+                    </div>
                 </Link>
 
                 <button
@@ -344,22 +330,19 @@ export default function SettingsPage() {
                         resetAllTours();
                         startPageTour("dashboard");
                     }}
-                    className="flex items-center justify-between rounded-lg border-2 border-border bg-card p-4 shadow-[3px_3px_0px_0px] shadow-border/50 hover:border-primary transition-colors group text-left"
+                    className="flex items-center gap-2.5 rounded-lg border-2 border-border bg-card p-3 shadow-[3px_3px_0px_0px] shadow-border/50 hover:border-primary transition-colors group text-left"
                 >
-                    <div className="flex items-center gap-3">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-md bg-primary/10 border border-primary/20">
-                            <Compass className="h-4 w-4 text-primary" strokeWidth={2.5} />
-                        </div>
-                        <div>
-                            <p className="font-bold text-sm group-hover:text-primary transition-colors">
-                                Take a Tour
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                                Reset & replay guided tips on every page
-                            </p>
-                        </div>
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary/10 border border-primary/20">
+                        <Compass className="h-4 w-4 text-primary" strokeWidth={2.5} />
                     </div>
-                    <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                    <div className="min-w-0">
+                        <p className="font-bold text-xs group-hover:text-primary transition-colors">
+                            Take a Tour
+                        </p>
+                        <p className="text-[10px] text-muted-foreground truncate">
+                            Replay guided tips
+                        </p>
+                    </div>
                 </button>
             </motion.div>
 
@@ -413,7 +396,7 @@ export default function SettingsPage() {
                             <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">
                                 Expense ({expenseCategories.length})
                             </p>
-                            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                            <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                                 {expenseCategories.map(renderCategoryCard)}
                             </div>
                         </div>
@@ -424,7 +407,7 @@ export default function SettingsPage() {
                                 <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">
                                     Investment ({investmentCategories.length})
                                 </p>
-                                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                                <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                                     {investmentCategories.map(renderCategoryCard)}
                                 </div>
                             </div>

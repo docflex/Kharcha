@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/select";
 import { LoadingSkeleton } from "@/components/layout/loading-skeleton";
 import { useProfile, useUpdateProfile, useChangePassword } from "@/hooks/use-profile";
+import { useCurrency } from "@/contexts/currency-context";
 import { PasswordStrengthIndicator } from "@/components/ui/password-strength";
 import { isPasswordComplex } from "@/lib/utils/password-strength";
 import { useConfirmDialog } from "@/components/ui/confirm-dialog";
@@ -262,12 +263,24 @@ export default function ProfilePage() {
                         </Label>
                         <Input
                             id="income"
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            value={monthlyIncome}
-                            onChange={(e) => setMonthlyIncome(e.target.value)}
-                            placeholder="e.g. 150000"
+                            type="text"
+                            inputMode="numeric"
+                            value={
+                                monthlyIncome
+                                    ? Number(monthlyIncome).toLocaleString(
+                                          currency === "INR"
+                                              ? "en-IN"
+                                              : currency === "JPY"
+                                                ? "ja-JP"
+                                                : "en-US"
+                                      )
+                                    : ""
+                            }
+                            onChange={(e) => {
+                                const raw = e.target.value.replace(/[^0-9.]/g, "");
+                                setMonthlyIncome(raw);
+                            }}
+                            placeholder={currency === "INR" ? "e.g. 1,50,000" : "e.g. 150,000"}
                             className="border-2 border-border bg-background font-mono text-sm h-10 focus:border-primary focus:ring-primary"
                         />
                     </div>

@@ -3,14 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { useAppStore } from "@/stores/app-store";
-import {
-    AlertCircle,
-    ChevronLeft,
-    ChevronRight,
-    ChevronsLeft,
-    ChevronsRight,
-    Loader2,
-} from "lucide-react";
+import { AlertCircle, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
 import { monthNumberToName } from "@/lib/utils/dates";
 import { PersonaCard } from "@/components/persona/persona-card";
 import { InsightsList } from "@/components/persona/insights-list";
@@ -55,24 +48,24 @@ export default function PersonaPage() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h1 className="text-3xl font-black uppercase tracking-tight">
+                    <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tight">
                         Monthly Persona
                     </h1>
-                    <p className="text-muted-foreground text-sm">
+                    <p className="text-muted-foreground text-xs md:text-sm font-mono">
                         Your spending personality and recommendations
                     </p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="hidden md:flex items-center gap-2">
                     <button
                         onClick={() => navigateMonth(-1)}
                         className="rounded-md border-2 border-border bg-background p-2 hover:bg-accent transition-colors shadow-[2px_2px_0px_0px] shadow-border/50 active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
                     >
                         <ChevronLeft className="h-4 w-4" strokeWidth={2.5} />
                     </button>
-                    <span className="font-mono font-bold text-sm min-w-[120px] text-center">
-                        {monthNumberToName(month)} {year}
+                    <span className="font-mono font-bold text-sm min-w-[100px] text-center">
+                        {monthNumberToName(month, "short")} {year}
                     </span>
                     <button
                         onClick={() => navigateMonth(1)}
@@ -84,8 +77,52 @@ export default function PersonaPage() {
             </div>
 
             {loading && (
-                <div className="flex items-center justify-center py-16">
-                    <Loader2 className="h-8 w-8 animate-spin text-amber-500" strokeWidth={2.5} />
+                <div className="space-y-6 animate-in fade-in">
+                    {/* Persona card skeleton */}
+                    <div className="rounded-lg border-2 border-border bg-card p-6 shadow-[3px_3px_0px_0px] shadow-border/50 animate-pulse">
+                        <div className="flex items-center gap-4">
+                            <div className="h-16 w-16 rounded-lg bg-muted" />
+                            <div className="flex-1 space-y-2">
+                                <div className="h-5 w-40 rounded bg-muted" />
+                                <div className="h-3 w-64 rounded bg-muted" />
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-5">
+                            {Array.from({ length: 4 }).map((_, i) => (
+                                <div
+                                    key={i}
+                                    className="rounded-md border-2 border-border p-3 space-y-2"
+                                    style={{ animationDelay: `${i * 100}ms` }}
+                                >
+                                    <div className="h-3 w-16 rounded bg-muted animate-pulse" />
+                                    <div className="h-5 w-24 rounded bg-muted animate-pulse" />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    {/* Insights + Recommendations skeleton */}
+                    <div className="grid gap-6 md:grid-cols-2">
+                        {Array.from({ length: 2 }).map((_, col) => (
+                            <div
+                                key={col}
+                                className="rounded-lg border-2 border-border bg-card p-5 shadow-[3px_3px_0px_0px] shadow-border/50 animate-pulse"
+                                style={{ animationDelay: `${col * 150}ms` }}
+                            >
+                                <div className="h-4 w-28 rounded bg-muted mb-4" />
+                                <div className="space-y-3">
+                                    {Array.from({ length: 3 }).map((_, j) => (
+                                        <div key={j} className="flex items-start gap-3">
+                                            <div className="h-8 w-8 rounded-md bg-muted shrink-0" />
+                                            <div className="flex-1 space-y-1.5">
+                                                <div className="h-3 w-full rounded bg-muted" />
+                                                <div className="h-3 w-3/4 rounded bg-muted" />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             )}
 

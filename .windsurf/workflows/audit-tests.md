@@ -82,4 +82,4 @@ npx vitest run --reporter=verbose 2>&1 | tail -5
 | empty-states | 6 tests — all data pages with no data |
 | landing | 4 tests — hero, CTA, sign-in link |
 
-#### Full audit document: `TEST-AUDIT.md`
+#### Test inventory is maintained in this workflow file above.

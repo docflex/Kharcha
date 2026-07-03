@@ -141,13 +141,13 @@ export default function CategoryDeepDivePage({ params }: { params: Promise<{ id:
             {(overBudgetCount > 0 || anomalyCount > 0) && (
                 <motion.div variants={item} className="flex flex-wrap gap-2">
                     {overBudgetCount > 0 && (
-                        <div className="flex items-center gap-1.5 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-1.5 text-xs font-bold">
+                        <div className="flex items-center gap-1.5 rounded-md border-2 border-destructive/30 bg-destructive/10 px-3 py-1.5 text-xs font-bold">
                             <AlertTriangle className="h-3.5 w-3.5 text-destructive" />
                             {overBudgetCount} month{overBudgetCount > 1 ? "s" : ""} over budget
                         </div>
                     )}
                     {anomalyCount > 0 && (
-                        <div className="flex items-center gap-1.5 rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-xs font-bold">
+                        <div className="flex items-center gap-1.5 rounded-md border-2 border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-xs font-bold">
                             <AlertTriangle className="h-3.5 w-3.5 text-amber-500" />
                             {anomalyCount} anomal{anomalyCount > 1 ? "ies" : "y"} detected
                         </div>

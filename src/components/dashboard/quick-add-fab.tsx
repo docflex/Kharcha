@@ -1,17 +1,52 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Plus, Wallet, Upload } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
+function useScrollDirection(threshold = 10) {
+    const [visible, setVisible] = useState(true);
+    const lastY = useRef(0);
+    const ticking = useRef(false);
+
+    useEffect(() => {
+        function onScroll() {
+            if (ticking.current) return;
+            ticking.current = true;
+            requestAnimationFrame(() => {
+                const y = window.scrollY;
+                if (Math.abs(y - lastY.current) > threshold) {
+                    setVisible(y <= 0 || y < lastY.current);
+                    lastY.current = y;
+                }
+                ticking.current = false;
+            });
+        }
+        window.addEventListener("scroll", onScroll, { passive: true });
+        return () => window.removeEventListener("scroll", onScroll);
+    }, [threshold]);
+
+    return visible;
+}
+
 export function QuickAddFab() {
     const [open, setOpen] = useState(false);
+    const visible = useScrollDirection();
+    const pathname = usePathname();
+    const onUploadPage = pathname === "/upload";
 
     return (
-        <div
+        <motion.div
             data-tour="quick-add-fab"
             className="fixed bottom-24 right-4 z-40 md:bottom-6 md:right-6"
+            animate={
+                visible
+                    ? { scale: 1, opacity: 1, y: 0, rotate: 0 }
+                    : { scale: 0, opacity: 0, y: 20, rotate: 90 }
+            }
+            transition={{ type: "spring", stiffness: 500, damping: 25 }}
         >
             <AnimatePresence>
                 {open && (
@@ -38,14 +73,30 @@ export function QuickAddFab() {
                             >
                                 <Wallet className="h-4 w-4 text-primary" strokeWidth={2.5} />
                             </Link>
-                            <Link
-                                href="/upload"
-                                onClick={() => setOpen(false)}
-                                className="flex h-10 w-10 items-center justify-center rounded-full bg-card border-2 border-border shadow-[2px_2px_0px_0px] shadow-border/50 hover:bg-muted transition-all"
-                                title="Upload"
-                            >
-                                <Upload className="h-4 w-4 text-primary" strokeWidth={2.5} />
-                            </Link>
+                            {onUploadPage ? (
+                                <button
+                                    onClick={() => {
+                                        setOpen(false);
+                                        const el =
+                                            document.getElementById("mobile-file-input") ||
+                                            document.getElementById("file-input");
+                                        el?.click();
+                                    }}
+                                    className="flex h-10 w-10 items-center justify-center rounded-full bg-card border-2 border-border shadow-[2px_2px_0px_0px] shadow-border/50 hover:bg-muted transition-all"
+                                    title="Select screenshots"
+                                >
+                                    <Upload className="h-4 w-4 text-primary" strokeWidth={2.5} />
+                                </button>
+                            ) : (
+                                <Link
+                                    href="/upload"
+                                    onClick={() => setOpen(false)}
+                                    className="flex h-10 w-10 items-center justify-center rounded-full bg-card border-2 border-border shadow-[2px_2px_0px_0px] shadow-border/50 hover:bg-muted transition-all"
+                                    title="Upload"
+                                >
+                                    <Upload className="h-4 w-4 text-primary" strokeWidth={2.5} />
+                                </Link>
+                            )}
                         </motion.div>
                     </>
                 )}
@@ -62,6 +113,6 @@ export function QuickAddFab() {
                     <Plus className="h-5 w-5" strokeWidth={3} />
                 </motion.div>
             </motion.button>
-        </div>
+        </motion.div>
     );
 }

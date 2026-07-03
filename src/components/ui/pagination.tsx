@@ -23,7 +23,7 @@ export function Pagination({
     const end = totalItems ? Math.min(page * (pageSize ?? 0), totalItems) : null;
 
     return (
-        <div className="flex items-center justify-between gap-4 px-4 py-3">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4 px-2 sm:px-4 py-2 sm:py-3">
             {/* Item count */}
             <span className="text-xs font-mono text-muted-foreground">
                 {totalItems && start && end
@@ -32,7 +32,7 @@ export function Pagination({
             </span>
 
             {/* Controls */}
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 flex-wrap justify-center">
                 <PaginationButton
                     onClick={() => onPageChange(1)}
                     disabled={page === 1}

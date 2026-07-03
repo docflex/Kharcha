@@ -28,6 +28,7 @@ import {
     ArrowUpDown,
     MessageSquare,
     Check,
+    Wallet,
 } from "lucide-react";
 import { getCategoryIcon } from "@/components/ui/icon-picker";
 import { motion, AnimatePresence } from "motion/react";
@@ -252,12 +253,24 @@ export function ExpenseTable({
 
     if (loading || expenses.length === 0) {
         return (
-            <div className="rounded-lg border-2 border-border p-8 text-center shadow-[3px_3px_0px_0px] shadow-border/50">
-                <p
-                    className={`text-sm text-muted-foreground font-mono ${loading ? "animate-pulse" : ""}`}
-                >
-                    {loading ? "Loading expenses..." : "No expenses found for the selected filters"}
-                </p>
+            <div className="rounded-lg border-2 border-border p-8 text-center shadow-[3px_3px_0px_0px] shadow-border/50 space-y-3">
+                {loading ? (
+                    <p className="text-sm text-muted-foreground font-mono animate-pulse">
+                        Loading expenses...
+                    </p>
+                ) : (
+                    <>
+                        <div className="flex justify-center">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-lg border-2 border-border bg-muted/50">
+                                <Wallet className="h-5 w-5 text-muted-foreground" />
+                            </div>
+                        </div>
+                        <p className="text-sm font-bold">No expenses found</p>
+                        <p className="text-xs text-muted-foreground font-mono">
+                            Try adjusting your filters or add a new expense
+                        </p>
+                    </>
+                )}
             </div>
         );
     }
@@ -480,8 +493,8 @@ export function ExpenseTable({
                 </div>
             </div>
 
-            {/* Mobile Card Layout */}
-            <div className="md:hidden space-y-3">
+            {/* Mobile Card Layout — compact rows, actions in thumb zone */}
+            <div className="md:hidden space-y-2">
                 <AnimatePresence mode="popLayout">
                     {paginatedExpenses.map((expense) => (
                         <motion.div
@@ -489,13 +502,14 @@ export function ExpenseTable({
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, x: -100 }}
-                            className="rounded-lg border-2 border-border bg-card p-4 shadow-[3px_3px_0px_0px] shadow-border/50"
+                            className="rounded-lg border-2 border-border bg-card px-3 py-2.5 shadow-[2px_2px_0px_0px] shadow-border/50"
                         >
-                            <div className="flex items-start justify-between gap-3">
+                            {/* Row 1: checkbox + category name + amount */}
+                            <div className="flex items-center gap-2">
                                 {selectable && (
                                     <button
                                         onClick={() => toggleSelect(expense.id)}
-                                        className={`mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 transition-colors ${
+                                        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 transition-colors ${
                                             selectedIds?.has(expense.id)
                                                 ? "border-primary bg-primary text-primary-foreground"
                                                 : "border-border hover:border-primary"
@@ -507,44 +521,41 @@ export function ExpenseTable({
                                         )}
                                     </button>
                                 )}
-                                <div className="min-w-0 flex-1">
-                                    <p className="font-bold text-sm truncate">
-                                        {expense.categoryName}
-                                    </p>
-                                    <p className="text-xs font-mono text-muted-foreground mt-0.5">
-                                        {monthNumberToName(expense.month, "short")} {expense.year}
-                                    </p>
-                                </div>
-                                <p
-                                    className={`font-mono shrink-0 ${amountWeightClass(expense.amount, maxAmount)}`}
+                                <span className="font-bold text-sm truncate flex-1 min-w-0">
+                                    {expense.categoryName}
+                                </span>
+                                <span
+                                    className={`font-mono shrink-0 text-sm ${amountWeightClass(expense.amount, maxAmount)}`}
                                 >
                                     {formatAmount(expense.amount)}
-                                </p>
+                                </span>
                             </div>
-                            <div className="flex items-center justify-between mt-3">
-                                <Badge variant={sourceVariant[expense.source] || "outline"}>
+                            {/* Row 2: date + source + actions (all inline, thumb-reachable) */}
+                            <div className="flex items-center gap-2 mt-1.5">
+                                <span className="text-[10px] font-mono text-muted-foreground">
+                                    {monthNumberToName(expense.month, "short")} {expense.year}
+                                </span>
+                                <Badge
+                                    variant={sourceVariant[expense.source] || "outline"}
+                                    className="text-[10px] px-1.5 py-0"
+                                >
                                     {expense.source}
                                 </Badge>
-                                <div className="flex items-center gap-1">
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        onClick={() => onEdit(expense)}
-                                        aria-label="Edit expense"
-                                        className="h-10 w-10"
-                                    >
-                                        <Pencil className="h-4 w-4" />
-                                    </Button>
-                                    <Button
-                                        variant="destructive"
-                                        size="icon"
-                                        onClick={() => onDelete(expense.id)}
-                                        aria-label="Delete expense"
-                                        className="h-10 w-10"
-                                    >
-                                        <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                </div>
+                                <div className="flex-1" />
+                                <button
+                                    onClick={() => onEdit(expense)}
+                                    aria-label="Edit expense"
+                                    className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                                >
+                                    <Pencil className="h-3.5 w-3.5" />
+                                </button>
+                                <button
+                                    onClick={() => onDelete(expense.id)}
+                                    aria-label="Delete expense"
+                                    className="p-1.5 rounded-md text-destructive/70 hover:text-destructive hover:bg-destructive/10 transition-colors"
+                                >
+                                    <Trash2 className="h-3.5 w-3.5" />
+                                </button>
                             </div>
                         </motion.div>
                     ))}
@@ -561,8 +572,8 @@ export function ExpenseTable({
                     />
                 </div>
 
-                {/* Mobile Total */}
-                <div className="flex items-center justify-between rounded-lg border-2 border-border bg-muted/50 px-4 py-3 shadow-[3px_3px_0px_0px] shadow-border/50">
+                {/* Mobile Total — extra right padding to clear the FAB */}
+                <div className="flex items-center justify-between rounded-lg border-2 border-border bg-muted/50 px-4 pr-16 py-3 shadow-[3px_3px_0px_0px] shadow-border/50">
                     <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">
                         Total ({expenses.length})
                     </span>

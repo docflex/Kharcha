@@ -7,6 +7,8 @@ interface AppState {
     year: number;
     /** Currently selected month (shared across Dashboard, Analytics, Expenses, Persona, Upload) */
     month: number;
+    /** Privacy mode — hides all financial values */
+    privacyMode: boolean;
     /** Set both year and month at once */
     setYearMonth: (year: number, month: number) => void;
     /** Set year only */
@@ -17,6 +19,8 @@ interface AppState {
     prevMonth: () => void;
     /** Navigate to next month */
     nextMonth: () => void;
+    /** Toggle privacy mode */
+    togglePrivacy: () => void;
 }
 
 const now = new Date();
@@ -24,6 +28,7 @@ const now = new Date();
 export const useAppStore = create<AppState>((set) => ({
     year: now.getFullYear(),
     month: now.getMonth() + 1,
+    privacyMode: false,
 
     setYearMonth: (year, month) => set({ year, month }),
 
@@ -46,4 +51,21 @@ export const useAppStore = create<AppState>((set) => ({
             }
             return { month: state.month + 1 };
         }),
+
+    togglePrivacy: () =>
+        set((state) => {
+            const next = !state.privacyMode;
+            if (typeof window !== "undefined") {
+                localStorage.setItem("kharcha:privacyMode", String(next));
+            }
+            return { privacyMode: next };
+        }),
 }));
+
+// Hydrate privacy mode from localStorage on client
+if (typeof window !== "undefined") {
+    const stored = localStorage.getItem("kharcha:privacyMode");
+    if (stored === "true") {
+        useAppStore.setState({ privacyMode: true });
+    }
+}

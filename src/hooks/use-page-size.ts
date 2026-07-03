@@ -14,21 +14,24 @@ export function usePageSize(
     itemHeight: number,
     overhead: number,
     minItems = 5,
-    maxItems = 50
+    maxItems = 50,
+    mobileMax = 7
 ): number {
     const [pageSize, setPageSize] = useState(minItems);
 
     useEffect(() => {
         function calculate() {
+            const isMobile = window.innerWidth < 768;
+            const cap = isMobile ? mobileMax : maxItems;
             const available = window.innerHeight - overhead;
             const items = Math.floor(available / itemHeight);
-            setPageSize(Math.max(minItems, Math.min(maxItems, items)));
+            setPageSize(Math.max(minItems, Math.min(cap, items)));
         }
 
         calculate();
         window.addEventListener("resize", calculate);
         return () => window.removeEventListener("resize", calculate);
-    }, [itemHeight, overhead, minItems, maxItems]);
+    }, [itemHeight, overhead, minItems, maxItems, mobileMax]);
 
     return pageSize;
 }

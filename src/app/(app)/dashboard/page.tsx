@@ -14,8 +14,6 @@ import {
     AlertCircle,
     ChevronLeft,
     ChevronRight,
-    Eye,
-    EyeOff,
 } from "lucide-react";
 import { useCurrency } from "@/contexts/currency-context";
 import { useAppStore } from "@/stores/app-store";
@@ -34,6 +32,17 @@ import { Sparkline } from "@/components/dashboard/sparkline";
 import { useAnalytics, useSparkline } from "@/hooks/use-analytics";
 import { useProfile } from "@/hooks/use-profile";
 import { usePageTour } from "@/hooks/use-page-tour";
+
+const CATEGORY_BAR_COLORS = [
+    "#f59e0b",
+    "#ef4444",
+    "#8b5cf6",
+    "#06b6d4",
+    "#22c55e",
+    "#ec4899",
+    "#3b82f6",
+    "#f97316",
+];
 
 const container = {
     hidden: { opacity: 0 },
@@ -60,7 +69,7 @@ function BentoCard({
     const card = (
         <motion.div
             variants={item}
-            className={`rounded-lg border-2 border-border bg-card p-4 md:p-5 shadow-[3px_3px_0px_0px] shadow-border/50 hover:shadow-[4px_4px_0px_0px] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all duration-200 min-w-0 overflow-hidden ${href ? "cursor-pointer" : ""} ${className}`}
+            className={`rounded-lg border-2 border-border bg-card p-3 md:p-5 shadow-[3px_3px_0px_0px] shadow-border/50 hover:shadow-[4px_4px_0px_0px] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all duration-200 min-w-0 overflow-hidden ${href ? "cursor-pointer" : ""} ${className}`}
         >
             {children}
         </motion.div>
@@ -102,21 +111,6 @@ export default function DashboardPage() {
     const { data: sparkData } = useSparkline(year, month);
     const { data: profile } = useProfile();
 
-    // Investment toggle — persisted in localStorage
-    const [includeInvestments, setIncludeInvestments] = useState(true);
-    useEffect(() => {
-        const stored = localStorage.getItem("kharcha:includeInvestments");
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        if (stored !== null) setIncludeInvestments(stored === "true");
-    }, []);
-    const toggleInvestments = useCallback(() => {
-        setIncludeInvestments((prev) => {
-            const next = !prev;
-            localStorage.setItem("kharcha:includeInvestments", String(next));
-            return next;
-        });
-    }, []);
-
     // Treat as loading until mounted to avoid hydration mismatch from persisted cache
     const loading = !mounted || queryLoading;
 
@@ -128,17 +122,12 @@ export default function DashboardPage() {
     const currentYear = now.getFullYear();
     const availableYears = Array.from({ length: 5 }, (_, i) => currentYear - i);
 
-    const totalExpenses = includeInvestments
-        ? (data?.summary.totalSpend ?? 0)
-        : (data?.summary.totalExpenses ?? 0);
+    const totalExpenses = data?.summary.totalSpend ?? 0;
     const totalIncome = data?.savings.totalIncome ?? 0;
     const savingsRate = data?.savings.savingsRate ?? 0;
     const momChange = data?.mom.totalPercentChange ?? null;
     const budgetOverview = data?.budgetOverview;
-    const allTopCats = data?.topCategories ?? [];
-    const topCats = includeInvestments
-        ? allTopCats
-        : allTopCats.filter((c) => c.type !== "investment");
+    const topCats = data?.topCategories ?? [];
     const overBudget = budgetOverview?.statuses.filter((s) => s.status === "over") ?? [];
 
     // Check if month has actual activity (expenses > 0)
@@ -177,41 +166,27 @@ export default function DashboardPage() {
     );
 
     return (
-        <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
+        <motion.div
+            variants={container}
+            initial="hidden"
+            animate="show"
+            className="space-y-3 md:space-y-6"
+        >
             {/* Header with greeting + month selector */}
             <motion.div
                 variants={item}
                 className="flex items-center justify-between flex-wrap gap-3"
             >
                 <div>
-                    <h1 className="text-2xl font-black tracking-tight uppercase md:text-4xl">
+                    <h1 className="text-lg font-black tracking-tight uppercase md:text-4xl">
                         {greeting.emoji} {greeting.text}
                         {userName ? `, ${userName.split(" ")[0]}` : ""}
                     </h1>
-                    <p className="text-sm font-mono text-muted-foreground mt-1">
+                    <p className="text-xs md:text-sm font-mono text-muted-foreground mt-0.5 md:mt-1">
                         {monthNumberToName(month)} {year} · spending overview
                     </p>
                 </div>
-                <div data-tour="month-selector" className="flex items-center gap-2">
-                    <button
-                        onClick={toggleInvestments}
-                        title={
-                            includeInvestments
-                                ? "Investments included — click to exclude"
-                                : "Investments excluded — click to include"
-                        }
-                        className={`rounded-md border-2 p-2 transition-colors shadow-[2px_2px_0px_0px] shadow-border/50 active:shadow-none active:translate-x-[2px] active:translate-y-[2px] ${
-                            includeInvestments
-                                ? "border-border bg-background hover:bg-accent"
-                                : "border-amber-500 bg-amber-500/10 hover:bg-amber-500/20"
-                        }`}
-                    >
-                        {includeInvestments ? (
-                            <Eye className="h-4 w-4" strokeWidth={2.5} />
-                        ) : (
-                            <EyeOff className="h-4 w-4 text-amber-500" strokeWidth={2.5} />
-                        )}
-                    </button>
+                <div data-tour="month-selector" className="hidden md:flex items-center gap-2">
                     <button
                         onClick={() => {
                             if (month === 1) {
@@ -268,7 +243,7 @@ export default function DashboardPage() {
             {error && (
                 <motion.div
                     variants={item}
-                    className="flex items-center gap-2 rounded-lg border border-destructive/50 bg-destructive/5 p-3 text-sm text-destructive"
+                    className="flex items-center gap-2 rounded-lg border-2 border-destructive/50 bg-destructive/5 p-3 text-sm text-destructive"
                 >
                     <AlertCircle className="size-4 shrink-0" />
                     {error}
@@ -296,8 +271,8 @@ export default function DashboardPage() {
             {/* Bento Grid */}
             <div data-tour="bento-grid" className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
                 {/* Total Expenses */}
-                <BentoCard className="col-span-2 md:col-span-1" href={`/expenses?${qs}`}>
-                    <div className="flex items-center justify-between mb-3">
+                <BentoCard href={`/expenses?${qs}`}>
+                    <div className="flex items-center justify-between mb-2 md:mb-3">
                         <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                             Expenses
                         </span>
@@ -341,7 +316,7 @@ export default function DashboardPage() {
 
                 {/* Income */}
                 <BentoCard href={`/settings/income?${qs}`}>
-                    <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center justify-between mb-2 md:mb-3">
                         <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                             Income
                         </span>
@@ -379,60 +354,64 @@ export default function DashboardPage() {
                     </div>
                 </BentoCard>
 
-                {/* Spending Pulse Ring */}
-                <BentoCard href={`/analytics?${qs}`}>
-                    <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                            Pulse
-                        </span>
-                    </div>
-                    <div className="flex items-center justify-center">
-                        {loading ? (
-                            <div className="h-[80px] w-[80px] rounded-full border-4 border-muted animate-pulse" />
-                        ) : (
-                            <SpendingRing
-                                spent={totalExpenses}
-                                income={isActualIncome ? totalIncome : 0}
-                                size={80}
-                            />
-                        )}
-                    </div>
-                    <p className="text-[10px] text-center text-muted-foreground mt-1.5 font-mono truncate">
-                        {!hasActivity
-                            ? "No spending yet"
-                            : !isActualIncome
-                              ? "Income pending"
-                              : totalIncome > 0
-                                ? formatAmount(data?.savings.savings ?? 0) + " saved"
-                                : "Add income first"}
-                    </p>
-                </BentoCard>
+                {/* Spending Pulse Ring — hidden on mobile to save space */}
+                <div className="hidden md:block">
+                    <BentoCard href={`/analytics?${qs}`}>
+                        <div className="flex items-center justify-between mb-2">
+                            <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                                Pulse
+                            </span>
+                        </div>
+                        <div className="flex items-center justify-center">
+                            {loading ? (
+                                <div className="h-[80px] w-[80px] rounded-full border-4 border-muted animate-pulse" />
+                            ) : (
+                                <SpendingRing
+                                    spent={totalExpenses}
+                                    income={isActualIncome ? totalIncome : 0}
+                                    size={80}
+                                />
+                            )}
+                        </div>
+                        <p className="text-[10px] text-center text-muted-foreground mt-1.5 font-mono truncate">
+                            {!hasActivity
+                                ? "No spending yet"
+                                : !isActualIncome
+                                  ? "Income pending"
+                                  : totalIncome > 0
+                                    ? formatAmount(data?.savings.savings ?? 0) + " saved"
+                                    : "Add income first"}
+                        </p>
+                    </BentoCard>
+                </div>
 
                 {/* Quick Actions — only show when no expenses yet */}
                 {!hasActivity && (
                     <BentoCard className="col-span-2 bg-primary text-primary-foreground border-foreground shadow-foreground">
-                        <div className="flex items-center gap-2 mb-3">
-                            <Upload className="h-4 w-4" strokeWidth={2.5} />
-                            <span className="text-xs font-black uppercase tracking-widest">
-                                Quick Upload
-                            </span>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <Upload className="h-4 w-4" strokeWidth={2.5} />
+                                <span className="text-xs font-black uppercase tracking-widest">
+                                    Quick Upload
+                                </span>
+                            </div>
+                            <Link
+                                href="/upload"
+                                className="inline-flex items-center gap-1.5 rounded-md bg-primary-foreground text-primary px-3 py-1.5 text-xs font-black uppercase tracking-wider border-2 border-primary-foreground hover:bg-primary-foreground/90 transition-colors"
+                            >
+                                Upload Now
+                                <ArrowRight className="h-3 w-3" />
+                            </Link>
                         </div>
-                        <p className="text-sm font-bold mb-4 opacity-90">
+                        <p className="hidden md:block text-sm font-bold mt-3 opacity-90">
                             Drop Buddy screenshots here to extract expenses automatically
                         </p>
-                        <Link
-                            href="/upload"
-                            className="inline-flex items-center gap-1.5 rounded-md bg-primary-foreground text-primary px-3 py-1.5 text-xs font-black uppercase tracking-wider border-2 border-primary-foreground hover:bg-primary-foreground/90 transition-colors"
-                        >
-                            Upload Now
-                            <ArrowRight className="h-3 w-3" />
-                        </Link>
                     </BentoCard>
                 )}
 
                 {/* Budget Status */}
                 <BentoCard href="/settings/budgets">
-                    <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center justify-between mb-2 md:mb-3">
                         <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                             Budgets
                         </span>
@@ -452,7 +431,7 @@ export default function DashboardPage() {
 
                 {/* Top Category */}
                 <BentoCard href={`/analytics?${qs}`}>
-                    <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center justify-between mb-2 md:mb-3">
                         <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                             Top Spend
                         </span>
@@ -511,24 +490,34 @@ export default function DashboardPage() {
                         Top Categories — {monthNumberToName(month, "short")} {year}
                     </h2>
                     <div className="space-y-2">
-                        {topCats.slice(0, 8).map((cat) => {
+                        {topCats.slice(0, 8).map((cat, i) => {
                             const pct =
                                 totalExpenses > 0
                                     ? (cat.amount / (data?.summary.totalSpend ?? totalExpenses)) *
                                       100
                                     : 0;
+                            const barColor = CATEGORY_BAR_COLORS[i % CATEGORY_BAR_COLORS.length];
                             return (
                                 <div key={cat.categoryName} className="space-y-0.5">
                                     <div className="flex items-center justify-between text-xs">
-                                        <span className="font-bold">{cat.categoryName}</span>
+                                        <span className="font-bold flex items-center gap-1.5">
+                                            <span
+                                                className="inline-block h-2 w-2 rounded-full shrink-0"
+                                                style={{ backgroundColor: barColor }}
+                                            />
+                                            {cat.categoryName}
+                                        </span>
                                         <span className="font-mono font-bold">
                                             {formatAmount(cat.amount)}
                                         </span>
                                     </div>
                                     <div className="h-1.5 rounded-full bg-muted border border-border overflow-hidden">
                                         <div
-                                            className="h-full rounded-full bg-primary transition-all duration-500"
-                                            style={{ width: `${Math.min(pct, 100)}%` }}
+                                            className="h-full rounded-full transition-all duration-500"
+                                            style={{
+                                                width: `${Math.min(pct, 100)}%`,
+                                                backgroundColor: barColor,
+                                            }}
                                         />
                                     </div>
                                 </div>
@@ -544,7 +533,7 @@ export default function DashboardPage() {
                     <h2 className="text-sm font-black uppercase tracking-widest mb-3">
                         Getting Started
                     </h2>
-                    <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-4">
+                    <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
                         {[
                             {
                                 step: "01",

@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
 import { SUPPORTED_CURRENCIES } from "@/lib/constants";
 import { formatCurrency } from "@/lib/utils/currency";
+import { useAppStore } from "@/stores/app-store";
 
 type CurrencyCode = (typeof SUPPORTED_CURRENCIES)[number]["code"];
 
@@ -93,12 +94,27 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
         [currency, rate]
     );
 
+    const privacyMode = useAppStore((s) => s.privacyMode);
+
     const format = useCallback(
         (amountInINR: number) => {
+            if (privacyMode) {
+                const sym =
+                    currency === "INR"
+                        ? "₹"
+                        : (new Intl.NumberFormat("en", {
+                              style: "currency",
+                              currency,
+                              currencyDisplay: "narrowSymbol",
+                          })
+                              .formatToParts(0)
+                              .find((p) => p.type === "currency")?.value ?? currency);
+                return `${sym}••••••`;
+            }
             const converted = convert(amountInINR);
             return formatCurrency(converted, currency);
         },
-        [convert, currency]
+        [convert, currency, privacyMode]
     );
 
     return (

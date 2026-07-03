@@ -45,20 +45,20 @@ import { ChartDeltaOverlay } from "@/components/ui/chart-delta-overlay";
 import { usePageTour } from "@/hooks/use-page-tour";
 
 const CHART_COLORS = [
-    "#F59E0B",
-    "#EF4444",
-    "#3B82F6",
-    "#10B981",
-    "#8B5CF6",
-    "#EC4899",
-    "#06B6D4",
-    "#F97316",
-    "#6366F1",
-    "#14B8A6",
-    "#D946EF",
-    "#0EA5E9",
-    "#84CC16",
-    "#A855F7",
+    "#F59E0B", // amber-500 (primary)
+    "#D97706", // amber-600
+    "#F97316", // orange-500
+    "#EA580C", // orange-600
+    "#DC2626", // red-600
+    "#B45309", // amber-700
+    "#92400E", // amber-800
+    "#C2410C", // orange-700
+    "#78350F", // amber-900
+    "#7C2D12", // orange-900
+    "#FBBF24", // amber-400
+    "#FB923C", // orange-400
+    "#FCA5A1", // red-300
+    "#FDE68A", // amber-200
 ];
 
 type TabKey = "breakdown" | "comparison" | "trends" | "heatmap" | "yoy";
@@ -126,6 +126,62 @@ function ChartSkeleton({ height = "h-[300px]" }: { height?: string }) {
         >
             <div className="h-4 w-40 rounded bg-muted animate-pulse mb-4" />
             <div className={`${height} rounded bg-muted/50 animate-pulse`} />
+        </div>
+    );
+}
+
+function InsightCarousel({
+    insights,
+}: {
+    insights: { text: string; variant: "positive" | "negative" | "neutral" }[];
+}) {
+    const [index, setIndex] = useState(0);
+
+    useEffect(() => {
+        if (insights.length <= 1) return;
+        const timer = setInterval(() => {
+            setIndex((prev) => (prev + 1) % insights.length);
+        }, 4000);
+        return () => clearInterval(timer);
+    }, [insights.length]);
+
+    const ins = insights[index];
+    const icon =
+        ins.variant === "positive" ? (
+            <TrendingDown className="h-4 w-4 text-green-500 shrink-0" strokeWidth={2.5} />
+        ) : ins.variant === "negative" ? (
+            <TrendingUp className="h-4 w-4 text-destructive shrink-0" strokeWidth={2.5} />
+        ) : (
+            <Lightbulb className="h-4 w-4 text-amber-500 shrink-0" strokeWidth={2.5} />
+        );
+
+    const bg =
+        ins.variant === "positive"
+            ? "bg-green-500/10 border-green-500/30"
+            : ins.variant === "negative"
+              ? "bg-destructive/10 border-destructive/30"
+              : "bg-amber-500/10 border-amber-500/30";
+
+    return (
+        <div data-tour="analytics-insights" className="relative overflow-hidden">
+            <AnimatePresence mode="wait">
+                <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: 40 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -40 }}
+                    transition={{ duration: 0.3 }}
+                    className={`flex items-center gap-2 rounded-md border px-3 py-2 text-sm ${bg}`}
+                >
+                    {icon}
+                    <span className="flex-1">{ins.text}</span>
+                    {insights.length > 1 && (
+                        <span className="text-[10px] font-mono text-muted-foreground shrink-0">
+                            {index + 1}/{insights.length}
+                        </span>
+                    )}
+                </motion.div>
+            </AnimatePresence>
         </div>
     );
 }
@@ -198,11 +254,14 @@ export default function AnalyticsPage() {
 
     // Prepare chart data
     const categories = data?.summary.categories.filter((c) => c.type === "expense") ?? [];
-    const donutData = categories.map((c, i) => ({
-        name: c.categoryName,
-        value: c.amount,
-        color: CHART_COLORS[i % CHART_COLORS.length],
-    }));
+    const donutData = categories
+        .slice()
+        .sort((a, b) => b.amount - a.amount)
+        .map((c, i) => ({
+            name: c.categoryName,
+            value: c.amount,
+            color: CHART_COLORS[i % CHART_COLORS.length],
+        }));
     const totalSpend = categories.reduce((sum, c) => sum + c.amount, 0);
 
     const barData = (data?.topCategories ?? []).slice(0, 8).map((c, i) => ({
@@ -302,7 +361,7 @@ export default function AnalyticsPage() {
                         Deep insights into your spending patterns
                     </p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="hidden md:flex items-center gap-2">
                     <button
                         onClick={() => {
                             if (month === 1) {
@@ -359,7 +418,7 @@ export default function AnalyticsPage() {
             {error && (
                 <motion.div
                     variants={item}
-                    className="flex items-center gap-2 rounded-lg border border-destructive/50 bg-destructive/5 p-3 text-sm text-destructive"
+                    className="flex items-center gap-2 rounded-lg border-2 border-destructive/50 bg-destructive/5 p-3 text-sm text-destructive"
                 >
                     <AlertCircle className="size-4 shrink-0" />
                     {error}
@@ -391,36 +450,8 @@ export default function AnalyticsPage() {
 
             {!loading && hasData && (
                 <motion.div variants={item} className="space-y-5">
-                    {/* A5: Insight callouts */}
-                    {insights.length > 0 && (
-                        <div data-tour="analytics-insights" className="flex flex-wrap gap-2">
-                            {insights.map((ins, i) => (
-                                <InsightCallout
-                                    key={i}
-                                    icon={
-                                        ins.variant === "positive" ? (
-                                            <TrendingDown
-                                                className="h-4 w-4 text-green-500 shrink-0"
-                                                strokeWidth={2.5}
-                                            />
-                                        ) : ins.variant === "negative" ? (
-                                            <TrendingUp
-                                                className="h-4 w-4 text-destructive shrink-0"
-                                                strokeWidth={2.5}
-                                            />
-                                        ) : (
-                                            <Lightbulb
-                                                className="h-4 w-4 text-amber-500 shrink-0"
-                                                strokeWidth={2.5}
-                                            />
-                                        )
-                                    }
-                                    text={ins.text}
-                                    variant={ins.variant}
-                                />
-                            ))}
-                        </div>
-                    )}
+                    {/* A5: Insight carousel */}
+                    {insights.length > 0 && <InsightCarousel insights={insights} />}
 
                     {/* A7: Tabbed layout — mobile swipeable via overflow-x-auto */}
                     <div
@@ -470,14 +501,17 @@ export default function AnalyticsPage() {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -10 }}
                                 transition={{ duration: 0.2 }}
-                                className="grid gap-4 md:grid-cols-2"
+                                className="grid gap-3 md:gap-4 md:grid-cols-2"
                             >
-                                {/* A3: Donut with side legend showing amounts */}
+                                {/* A3: Donut with total in center + compact legend */}
                                 <ChartCard
-                                    title={`Spending Breakdown — ${monthNumberToName(month, "short")} ${year}`}
+                                    title={`Breakdown — ${monthNumberToName(month, "short")} ${year}`}
                                 >
-                                    <div className="flex flex-col md:flex-row gap-4">
-                                        <div className="h-[240px] w-full md:w-1/2 min-w-0">
+                                    <p className="md:hidden -mt-3 mb-2 text-xs font-mono font-bold text-muted-foreground">
+                                        Total: {formatAmount(totalSpend)}
+                                    </p>
+                                    <div className="flex flex-row gap-2 md:gap-4">
+                                        <div className="h-[120px] md:h-[240px] w-[120px] md:w-1/2 shrink-0 relative">
                                             <ResponsiveContainer
                                                 width="100%"
                                                 height="100%"
@@ -488,8 +522,8 @@ export default function AnalyticsPage() {
                                                         data={donutData}
                                                         cx="50%"
                                                         cy="50%"
-                                                        innerRadius={50}
-                                                        outerRadius={85}
+                                                        innerRadius={30}
+                                                        outerRadius={55}
                                                         paddingAngle={2}
                                                         dataKey="value"
                                                         isAnimationActive={true}
@@ -520,9 +554,18 @@ export default function AnalyticsPage() {
                                                     />
                                                 </PieChart>
                                             </ResponsiveContainer>
+                                            {/* Total in donut center — desktop only */}
+                                            <div className="absolute inset-0 hidden md:flex flex-col items-center justify-center pointer-events-none">
+                                                <span className="text-[8px] uppercase tracking-widest text-muted-foreground font-bold">
+                                                    Total
+                                                </span>
+                                                <span className="text-[11px] font-mono font-black leading-tight">
+                                                    {formatAmount(totalSpend)}
+                                                </span>
+                                            </div>
                                         </div>
                                         {/* A3: Side legend with larger swatches + amounts */}
-                                        <div className="flex flex-col gap-1.5 justify-center md:w-1/2 overflow-x-auto">
+                                        <div className="flex flex-col gap-0.5 md:gap-1.5 justify-center flex-1 min-w-0 overflow-x-auto">
                                             {donutData.slice(0, 10).map((d) => {
                                                 const pct =
                                                     totalSpend > 0
@@ -534,15 +577,15 @@ export default function AnalyticsPage() {
                                                         className="flex items-center gap-2 min-w-0"
                                                     >
                                                         <span
-                                                            className="h-3 w-3 rounded-sm border shrink-0"
+                                                            className="h-2.5 w-2.5 md:h-3 md:w-3 rounded-sm border shrink-0"
                                                             style={{
                                                                 backgroundColor: d.color,
                                                             }}
                                                         />
-                                                        <span className="text-xs truncate flex-1">
+                                                        <span className="text-[11px] md:text-xs truncate flex-1">
                                                             {d.name}
                                                         </span>
-                                                        <span className="text-xs font-mono text-muted-foreground whitespace-nowrap">
+                                                        <span className="text-[11px] md:text-xs font-mono text-muted-foreground whitespace-nowrap">
                                                             {formatAmount(d.value)} ({pct}%)
                                                         </span>
                                                     </div>
@@ -554,7 +597,7 @@ export default function AnalyticsPage() {
 
                                 {/* A1: Full category names — wider YAxis + tooltip */}
                                 <ChartCard title="Top Categories by Amount">
-                                    <div className="h-[300px]">
+                                    <div className="h-[200px] md:h-[300px]">
                                         <ResponsiveContainer
                                             width="100%"
                                             height="100%"

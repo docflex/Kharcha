@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import {
     Table,
     TableHeader,
@@ -100,7 +101,7 @@ export function ReviewTable({ entries: initial, onApprove, loading }: ReviewTabl
         <div className="space-y-4">
             <div className="flex items-center justify-between">
                 <div>
-                    <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+                    <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">
                         Extracted Entries
                     </p>
                     <p className="text-lg font-bold font-mono">
@@ -110,43 +111,57 @@ export function ReviewTable({ entries: initial, onApprove, loading }: ReviewTabl
                         </span>
                     </p>
                 </div>
-                <Button variant="outline" size="sm" onClick={approveAll}>
-                    <Check className="size-3.5" />
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={approveAll}
+                    className="font-bold gap-1"
+                >
+                    <Check className="size-3.5" strokeWidth={2.5} />
                     Approve All
                 </Button>
             </div>
 
-            <div className="rounded-xl border">
+            {/* Desktop Table */}
+            <div className="hidden md:block rounded-lg border-2 border-border shadow-[3px_3px_0px_0px] shadow-border/50 overflow-x-auto">
                 <Table>
                     <TableHeader>
-                        <TableRow>
-                            <TableHead className="w-8"></TableHead>
-                            <TableHead>Category</TableHead>
-                            <TableHead className="text-right">Amount</TableHead>
-                            <TableHead className="w-24 text-center">Confidence</TableHead>
-                            <TableHead className="w-20"></TableHead>
+                        <TableRow className="border-b-2">
+                            <TableHead className="w-[40px]"></TableHead>
+                            <TableHead className="text-xs font-black uppercase tracking-widest">
+                                Category
+                            </TableHead>
+                            <TableHead className="text-xs font-black uppercase tracking-widest text-right">
+                                Amount
+                            </TableHead>
+                            <TableHead className="text-xs font-black uppercase tracking-widest w-24 text-center">
+                                Confidence
+                            </TableHead>
+                            <TableHead className="text-xs font-black uppercase tracking-widest w-[100px]">
+                                Actions
+                            </TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {entries.map((entry) => (
                             <TableRow
                                 key={entry.id}
-                                className={!entry.approved ? "opacity-50" : undefined}
+                                className={`hover:bg-muted/30 transition-colors ${!entry.approved ? "opacity-50" : ""}`}
                             >
                                 <TableCell>
                                     <button
                                         onClick={() => toggleApproval(entry.id)}
-                                        className={`flex size-5 items-center justify-center rounded border transition-colors ${
+                                        className={`flex size-5 items-center justify-center rounded border-2 transition-colors ${
                                             entry.approved
-                                                ? "border-amber-500 bg-amber-500 text-white"
-                                                : "border-muted-foreground/30 hover:border-muted-foreground"
+                                                ? "border-primary bg-primary text-primary-foreground"
+                                                : "border-border hover:border-primary"
                                         }`}
                                     >
                                         {entry.approved && <Check className="size-3" />}
                                     </button>
                                 </TableCell>
 
-                                <TableCell>
+                                <TableCell className="font-bold">
                                     {editingId === entry.id ? (
                                         <Input
                                             value={editCategory}
@@ -155,7 +170,7 @@ export function ReviewTable({ entries: initial, onApprove, loading }: ReviewTabl
                                             autoFocus
                                         />
                                     ) : (
-                                        <span className="font-medium">{entry.category}</span>
+                                        <span>{entry.category}</span>
                                     )}
                                     {entry.conflict && (
                                         <Badge
@@ -187,36 +202,48 @@ export function ReviewTable({ entries: initial, onApprove, loading }: ReviewTabl
                                 </TableCell>
 
                                 <TableCell>
-                                    <div className="flex gap-1">
+                                    <div className="flex items-center gap-1">
                                         {editingId === entry.id ? (
                                             <>
-                                                <button
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
                                                     onClick={saveEdit}
-                                                    className="rounded p-1 text-green-500 hover:bg-green-500/10"
+                                                    aria-label="Save edit"
+                                                    className="h-8 w-8 text-green-500 hover:text-green-600"
                                                 >
-                                                    <Check className="size-3.5" />
-                                                </button>
-                                                <button
+                                                    <Check className="size-4" />
+                                                </Button>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
                                                     onClick={cancelEdit}
-                                                    className="rounded p-1 text-muted-foreground hover:bg-muted"
+                                                    aria-label="Cancel edit"
+                                                    className="h-8 w-8"
                                                 >
-                                                    <X className="size-3.5" />
-                                                </button>
+                                                    <X className="size-4" />
+                                                </Button>
                                             </>
                                         ) : (
                                             <>
-                                                <button
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
                                                     onClick={() => startEdit(entry)}
-                                                    className="rounded p-1 text-muted-foreground hover:bg-muted"
+                                                    aria-label="Edit entry"
+                                                    className="h-8 w-8"
                                                 >
-                                                    <Pencil className="size-3.5" />
-                                                </button>
-                                                <button
+                                                    <Pencil className="size-4" />
+                                                </Button>
+                                                <Button
+                                                    variant="destructive"
+                                                    size="icon"
                                                     onClick={() => removeEntry(entry.id)}
-                                                    className="rounded p-1 text-destructive hover:bg-destructive/10"
+                                                    aria-label="Remove entry"
+                                                    className="h-8 w-8"
                                                 >
-                                                    <X className="size-3.5" />
-                                                </button>
+                                                    <X className="size-4" />
+                                                </Button>
                                             </>
                                         )}
                                     </div>
@@ -227,10 +254,86 @@ export function ReviewTable({ entries: initial, onApprove, loading }: ReviewTabl
                 </Table>
             </div>
 
+            {/* Mobile — dense single-row list */}
+            <div className="md:hidden rounded-lg border-2 border-border overflow-hidden">
+                <AnimatePresence mode="popLayout">
+                    {entries.map((entry, idx) => (
+                        <motion.div
+                            key={entry.id}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className={`flex items-center gap-2 px-3 py-2 ${
+                                idx > 0 ? "border-t border-border" : ""
+                            } ${!entry.approved ? "opacity-40" : ""}`}
+                        >
+                            {editingId === entry.id ? (
+                                <div className="flex items-center gap-2 flex-1 min-w-0">
+                                    <Input
+                                        value={editCategory}
+                                        onChange={(e) => setEditCategory(e.target.value)}
+                                        className="h-7 text-xs flex-1 min-w-0"
+                                        autoFocus
+                                    />
+                                    <Input
+                                        value={editAmount}
+                                        onChange={(e) => setEditAmount(e.target.value)}
+                                        className="h-7 text-xs font-mono w-24"
+                                        type="number"
+                                        step="0.01"
+                                    />
+                                    <button onClick={saveEdit} className="p-1 text-green-500">
+                                        <Check className="size-3.5" />
+                                    </button>
+                                    <button
+                                        onClick={cancelEdit}
+                                        className="p-1 text-muted-foreground"
+                                    >
+                                        <X className="size-3.5" />
+                                    </button>
+                                </div>
+                            ) : (
+                                <>
+                                    <button
+                                        onClick={() => toggleApproval(entry.id)}
+                                        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 transition-colors ${
+                                            entry.approved
+                                                ? "border-primary bg-primary text-primary-foreground"
+                                                : "border-border hover:border-primary"
+                                        }`}
+                                    >
+                                        {entry.approved && <Check className="size-3" />}
+                                    </button>
+                                    <span className="text-xs font-bold truncate flex-1 min-w-0">
+                                        {entry.category}
+                                    </span>
+                                    <ConfidenceBadge confidence={entry.confidence} />
+                                    <span className="text-xs font-mono font-bold shrink-0">
+                                        {formatAmount(entry.amount)}
+                                    </span>
+                                    <button
+                                        onClick={() => startEdit(entry)}
+                                        className="p-1 text-muted-foreground hover:text-foreground"
+                                    >
+                                        <Pencil className="size-3" />
+                                    </button>
+                                    <button
+                                        onClick={() => removeEntry(entry.id)}
+                                        className="p-1 text-destructive/60 hover:text-destructive"
+                                    >
+                                        <X className="size-3" />
+                                    </button>
+                                </>
+                            )}
+                        </motion.div>
+                    ))}
+                </AnimatePresence>
+            </div>
+
             <Button
                 onClick={handleCommit}
                 disabled={approvedEntries.length === 0 || loading}
-                className="w-full"
+                className="w-full font-bold gap-1.5 border-2 border-foreground shadow-[2px_2px_0px_0px] shadow-foreground hover:shadow-[3px_3px_0px_0px] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all"
             >
                 {loading ? (
                     <>

@@ -405,7 +405,7 @@ export default function IncomePage() {
             {displayError && (
                 <motion.div
                     variants={item}
-                    className="flex items-center gap-2 rounded-lg border border-destructive/50 bg-destructive/5 p-2 text-xs text-destructive"
+                    className="flex items-center gap-2 rounded-lg border-2 border-destructive/50 bg-destructive/5 p-2 text-xs text-destructive"
                 >
                     <AlertCircle className="size-3.5 shrink-0" />
                     {displayError}
@@ -793,20 +793,24 @@ export default function IncomePage() {
                         </AnimatePresence>
 
                         {/* Mobile Pagination + Total */}
-                        <div className="flex items-center justify-between rounded-lg border-2 border-border bg-muted/50 px-3 py-2">
-                            <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">
-                                Total ({sortedEntries.length}) ·{" "}
-                                <span className="text-sm text-primary font-mono">
+                        <div className="flex flex-col gap-2 rounded-lg border-2 border-border bg-muted/50 px-3 py-2">
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">
+                                    Total ({sortedEntries.length})
+                                </span>
+                                <span className="text-sm text-primary font-mono font-black">
                                     {formatAmount(sortedEntries.reduce((s, e) => s + e.amount, 0))}
                                 </span>
-                            </span>
-                            <Pagination
-                                page={incomePage}
-                                totalPages={totalIncomePages}
-                                onPageChange={setIncomePage}
-                                totalItems={sortedEntries.length}
-                                pageSize={entriesPerPage}
-                            />
+                            </div>
+                            {totalIncomePages > 1 && (
+                                <Pagination
+                                    page={incomePage}
+                                    totalPages={totalIncomePages}
+                                    onPageChange={setIncomePage}
+                                    totalItems={sortedEntries.length}
+                                    pageSize={entriesPerPage}
+                                />
+                            )}
                         </div>
                     </div>
                 </>

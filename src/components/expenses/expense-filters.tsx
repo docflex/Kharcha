@@ -24,6 +24,7 @@ interface ExpenseFiltersProps {
     onSourceChange: (source: string | null) => void;
     onCategoryChange: (categoryId: string | null) => void;
     onSearchChange: (query: string) => void;
+    onNavigate?: (direction: -1 | 1) => void;
 }
 
 export function ExpenseFilters({
@@ -39,10 +40,12 @@ export function ExpenseFilters({
     onSourceChange,
     onCategoryChange,
     onSearchChange,
+    onNavigate,
 }: ExpenseFiltersProps) {
-    function navigateMonth(direction: -1 | 1) {
+    function navigateMonth(dir: -1 | 1) {
         if (month === null) return;
-        let newMonth = month + direction;
+        onNavigate?.(dir);
+        let newMonth = month + dir;
         let newYear = year;
         if (newMonth > 12) {
             newMonth = 1;
@@ -55,67 +58,70 @@ export function ExpenseFilters({
         onYearChange(newYear);
     }
 
+    const monthNav = (
+        <div className="flex items-center gap-2">
+            <button
+                onClick={() => navigateMonth(-1)}
+                disabled={month === null}
+                className="rounded-md border-2 border-border bg-background p-2 hover:bg-accent transition-colors shadow-[2px_2px_0px_0px] shadow-border/50 active:shadow-none active:translate-x-[2px] active:translate-y-[2px] disabled:opacity-30 disabled:pointer-events-none"
+            >
+                <ChevronLeft className="h-4 w-4" strokeWidth={2.5} />
+            </button>
+
+            <Select value={String(year)} onValueChange={(v) => v && onYearChange(Number(v))}>
+                <SelectTrigger>
+                    <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                    {availableYears.map((y) => (
+                        <SelectItem key={y} value={String(y)}>
+                            {y}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+
+            <Select
+                value={month !== null ? String(month) : "all"}
+                onValueChange={(v) => {
+                    if (v === "all") {
+                        onMonthChange(null);
+                    } else if (v) {
+                        onMonthChange(Number(v));
+                    }
+                }}
+                items={{ all: "All Months", ...MONTH_SELECT_ITEMS }}
+            >
+                <SelectTrigger>
+                    <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="all">All Months</SelectItem>
+                    {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
+                        <SelectItem key={m} value={String(m)}>
+                            {monthNumberToName(m, "short")}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+
+            <button
+                onClick={() => navigateMonth(1)}
+                disabled={month === null}
+                className="rounded-md border-2 border-border bg-background p-2 hover:bg-accent transition-colors shadow-[2px_2px_0px_0px] shadow-border/50 active:shadow-none active:translate-x-[2px] active:translate-y-[2px] disabled:opacity-30 disabled:pointer-events-none"
+            >
+                <ChevronRight className="h-4 w-4" strokeWidth={2.5} />
+            </button>
+        </div>
+    );
+
     return (
-        <div className="space-y-3">
-            <div className="flex flex-wrap items-center gap-2">
-                {/* Prev month */}
-                <button
-                    onClick={() => navigateMonth(-1)}
-                    disabled={month === null}
-                    className="rounded-md border-2 border-border bg-background p-2 hover:bg-accent transition-colors shadow-[2px_2px_0px_0px] shadow-border/50 active:shadow-none active:translate-x-[2px] active:translate-y-[2px] disabled:opacity-30 disabled:pointer-events-none"
-                >
-                    <ChevronLeft className="h-4 w-4" strokeWidth={2.5} />
-                </button>
+        <div className="space-y-2 md:space-y-3">
+            {/* Desktop: month nav on top */}
+            <div className="hidden md:block">{monthNav}</div>
 
-                {/* Year filter */}
-                <Select value={String(year)} onValueChange={(v) => v && onYearChange(Number(v))}>
-                    <SelectTrigger>
-                        <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {availableYears.map((y) => (
-                            <SelectItem key={y} value={String(y)}>
-                                {y}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-
-                {/* Month filter */}
-                <Select
-                    value={month !== null ? String(month) : "all"}
-                    onValueChange={(v) => {
-                        if (v === "all") {
-                            onMonthChange(null);
-                        } else if (v) {
-                            onMonthChange(Number(v));
-                        }
-                    }}
-                    items={{ all: "All Months", ...MONTH_SELECT_ITEMS }}
-                >
-                    <SelectTrigger>
-                        <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">All Months</SelectItem>
-                        {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
-                            <SelectItem key={m} value={String(m)}>
-                                {monthNumberToName(m, "short")}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-
-                {/* Next month */}
-                <button
-                    onClick={() => navigateMonth(1)}
-                    disabled={month === null}
-                    className="rounded-md border-2 border-border bg-background p-2 hover:bg-accent transition-colors shadow-[2px_2px_0px_0px] shadow-border/50 active:shadow-none active:translate-x-[2px] active:translate-y-[2px] disabled:opacity-30 disabled:pointer-events-none"
-                >
-                    <ChevronRight className="h-4 w-4" strokeWidth={2.5} />
-                </button>
-
-                {/* Source filter */}
+            {/* Filters + search — all inline */}
+            <div className="flex items-center gap-2">
                 <Select
                     value={source || "all"}
                     onValueChange={(v) => {
@@ -138,7 +144,6 @@ export function ExpenseFilters({
                     </SelectContent>
                 </Select>
 
-                {/* Category filter */}
                 <Select
                     value={categoryId || "all"}
                     onValueChange={(v) => {
@@ -165,17 +170,16 @@ export function ExpenseFilters({
                         ))}
                     </SelectContent>
                 </Select>
-            </div>
 
-            {/* Search input */}
-            <div className="relative max-w-xs">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                    placeholder="Search by category or notes..."
-                    value={searchQuery}
-                    onChange={(e) => onSearchChange(e.target.value)}
-                    className="pl-9 h-9 font-mono text-sm"
-                />
+                <div className="relative flex-1 min-w-0">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                    <Input
+                        placeholder="Search..."
+                        value={searchQuery}
+                        onChange={(e) => onSearchChange(e.target.value)}
+                        className="pl-8 h-8 font-mono text-xs"
+                    />
+                </div>
             </div>
         </div>
     );

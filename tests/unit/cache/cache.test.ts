@@ -132,7 +132,7 @@ describe("Cache — LRU with TTL and tag invalidation", () => {
     // ─── cacheInvalidateByTags ──────────────────────────────────────────
 
     it("invalidates entries matching ALL given tags", async () => {
-        let fetchCount = { a: 0, b: 0 };
+        const fetchCount = { a: 0, b: 0 };
 
         await cacheGet("tagged-a", async () => ++fetchCount.a, {
             ttl: 60000,

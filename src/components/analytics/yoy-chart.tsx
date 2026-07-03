@@ -11,6 +11,7 @@ import {
     ResponsiveContainer,
     Legend,
 } from "recharts";
+import { TrendingUp } from "lucide-react";
 import { useCurrency } from "@/contexts/currency-context";
 import { monthNumberToName } from "@/lib/utils/dates";
 import type { YoYData } from "@/hooks/use-analytics";
@@ -26,9 +27,15 @@ export function YoYChart({ data }: YoYChartProps) {
 
     if (data.years.length === 0) {
         return (
-            <div className="rounded-lg border-2 border-border p-8 text-center shadow-[3px_3px_0px_0px] shadow-border/50">
-                <p className="text-sm text-muted-foreground font-mono">
-                    No data for {monthNumberToName(data.month)} across any year.
+            <div className="rounded-lg border-2 border-border p-8 text-center shadow-[3px_3px_0px_0px] shadow-border/50 space-y-3">
+                <div className="flex justify-center">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg border-2 border-border bg-muted/50">
+                        <TrendingUp className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                </div>
+                <p className="text-sm font-bold">No year-over-year data</p>
+                <p className="text-xs text-muted-foreground font-mono">
+                    No expenses for {monthNumberToName(data.month)} across any year yet
                 </p>
             </div>
         );

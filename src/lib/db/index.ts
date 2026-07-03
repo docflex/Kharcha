@@ -8,6 +8,6 @@ if (!DATABASE_URL) {
     throw new Error("DATABASE_URL environment variable is required");
 }
 
-const sql = neon(DATABASE_URL);
+const sql = neon(DATABASE_URL, { fetchOptions: { keepalive: true } });
 
 export const db = drizzle(sql, { schema });
