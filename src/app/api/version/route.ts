@@ -2,11 +2,12 @@ import { auth } from "@/lib/auth/config";
 import { db } from "@/lib/db";
 import { getDataVersion } from "@/lib/services/version-service";
 import { handleApiError } from "@/lib/utils/api-error";
+import { version } from "os";
 
 export async function GET() {
     const session = await auth();
     if (!session?.user?.id) {
-        return Response.json({ error: "Unauthorized" }, { status: 401 });
+        return Response.json({ data: { version: 0 } }, { status: 401 });
     }
 
     try {
