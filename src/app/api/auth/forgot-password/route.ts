@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
             .from(users)
             .where(eq(users.id, result.userId));
 
-        const appUrl = process.env.NEXTAUTH_URL || process.env.APP_URL || "http://localhost:3000";
+        const appUrl = process.env.AUTH_URL || process.env.APP_URL || "http://localhost:3000";
         const resetUrl = `${appUrl}/auth/reset-password?token=${result.token}`;
 
         await sendPasswordReset(db, result.userId, {

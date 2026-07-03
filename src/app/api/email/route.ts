@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
             return Response.json({ error: "User not found" }, { status: 404 });
         }
 
-        const appUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+        const appUrl = process.env.AUTH_URL || "http://localhost:3000";
         const monthName = monthNumberToName(month) || "Unknown";
 
         if (type === "upload_reminder") {

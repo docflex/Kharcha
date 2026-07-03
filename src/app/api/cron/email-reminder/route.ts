@@ -25,7 +25,7 @@ export async function GET(request: Request) {
         const targetMonth = now.getMonth() + 1; // 1-indexed
         const targetYear = now.getFullYear();
         const monthName = monthNumberToName(targetMonth) || "Unknown";
-        const appUrl = process.env.AUTH_URL || process.env.NEXTAUTH_URL || "http://localhost:3000";
+        const appUrl = process.env.AUTH_URL || process.env.AUTH_URL || "http://localhost:3000";
 
         // Fetch all users
         const allUsers = await db.select().from(users);
