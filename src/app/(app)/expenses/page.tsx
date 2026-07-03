@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "motion/react";
 import {
@@ -64,7 +64,7 @@ export default function ExpensesPage() {
         const p = searchParams.get("month");
         return p ? Number(p) : globalStore.month;
     });
-    const direction = useRef(0);
+    const [direction, setDirection] = useState(0);
     const [source, setSource] = useState<string | null>(null);
     const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
@@ -303,7 +303,7 @@ export default function ExpensesPage() {
                     onYearChange={setYear}
                     onMonthChange={setMonth}
                     onNavigate={(dir) => {
-                        direction.current = dir;
+                        setDirection(dir);
                     }}
                     onSourceChange={setSource}
                     onCategoryChange={setCategoryFilter}
@@ -327,9 +327,9 @@ export default function ExpensesPage() {
                 <motion.div
                     key={`${year}-${month}`}
                     data-tour="expense-table"
-                    initial={{ opacity: 0, x: direction.current * 40 }}
+                    initial={{ opacity: 0, x: direction * 40 }}
                     animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: direction.current * -40 }}
+                    exit={{ opacity: 0, x: direction * -40 }}
                     transition={{ duration: 0.2, ease: "easeInOut" }}
                 >
                     <ExpenseTable
@@ -436,7 +436,7 @@ export default function ExpensesPage() {
                     <button
                         onClick={() => {
                             if (month === null) return;
-                            direction.current = -1;
+                            setDirection(-1);
                             if (month === 1) {
                                 setMonth(12);
                                 setYear(year - 1);
@@ -455,7 +455,7 @@ export default function ExpensesPage() {
                     <button
                         onClick={() => {
                             if (month === null) return;
-                            direction.current = 1;
+                            setDirection(1);
                             if (month === 12) {
                                 setMonth(1);
                                 setYear(year + 1);
