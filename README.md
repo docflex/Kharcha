@@ -45,22 +45,22 @@ Millions of Indians track spending through apps like CRED, Buddy, or Fi — but 
 
 ## Tech Stack
 
-| Layer        | Technology                                  |
-| ------------ | ------------------------------------------- |
-| Framework    | Next.js 16 (App Router)                     |
-| Language     | TypeScript (strict)                         |
-| Styling      | TailwindCSS 4                               |
-| Components   | shadcn/ui v4 (Base UI)                      |
-| Database     | Neon Postgres (serverless)                  |
-| ORM          | Drizzle ORM                                 |
-| Auth         | NextAuth.js v5 (Google OAuth + Credentials) |
-| OCR          | Tesseract.js (WASM, fully offline)          |
-| Charts       | Recharts                                    |
-| Data Fetching| TanStack React Query + localStorage persist |
-| Email        | Nodemailer + node-cron                      |
-| Animations   | Framer Motion (motion/react)                |
-| Testing      | Vitest (713 unit/integration) + Playwright (23 E2E) |
-| Deployment   | Vercel + Docker                             |
+| Layer         | Technology                                          |
+| ------------- | --------------------------------------------------- |
+| Framework     | Next.js 16 (App Router)                             |
+| Language      | TypeScript (strict)                                 |
+| Styling       | TailwindCSS 4                                       |
+| Components    | shadcn/ui v4 (Base UI)                              |
+| Database      | Neon Postgres (serverless)                          |
+| ORM           | Drizzle ORM                                         |
+| Auth          | NextAuth.js v5 (Google OAuth + Credentials)         |
+| OCR           | Tesseract.js (WASM, fully offline)                  |
+| Charts        | Recharts                                            |
+| Data Fetching | TanStack React Query + localStorage persist         |
+| Email         | Nodemailer + node-cron                              |
+| Animations    | Framer Motion (motion/react)                        |
+| Testing       | Vitest (713 unit/integration) + Playwright (23 E2E) |
+| Deployment    | Vercel + Docker                                     |
 
 ## Getting Started
 
@@ -94,19 +94,19 @@ Open [http://localhost:3000](http://localhost:3000) and create an account.
 
 ### Environment Variables
 
-| Variable | Required | Description |
-| -------- | -------- | ----------- |
-| `DATABASE_URL` | ✅ | Neon Postgres connection string |
-| `AUTH_SECRET` | ✅ | Session secret — `openssl rand -base64 32` |
-| `AUTH_URL` | ✅ | Your app URL (e.g. `http://localhost:3000`) |
-| `GOOGLE_CLIENT_ID` | ❌ | Google OAuth client ID |
-| `GOOGLE_CLIENT_SECRET` | ❌ | Google OAuth client secret |
-| `SMTP_HOST` | ❌ | SMTP server (e.g. `smtp.gmail.com`) |
-| `SMTP_PORT` | ❌ | SMTP port (e.g. `587`) |
-| `SMTP_USER` | ❌ | SMTP username |
-| `SMTP_PASS` | ❌ | SMTP password / app password |
-| `EMAIL_FROM` | ❌ | Sender address |
-| `CRON_SECRET` | ❌ | Secret for Vercel cron jobs |
+| Variable               | Required | Description                                 |
+| ---------------------- | -------- | ------------------------------------------- |
+| `DATABASE_URL`         | ✅       | Neon Postgres connection string             |
+| `AUTH_SECRET`          | ✅       | Session secret — `openssl rand -base64 32`  |
+| `AUTH_URL`             | ✅       | Your app URL (e.g. `http://localhost:3000`) |
+| `GOOGLE_CLIENT_ID`     | ❌       | Google OAuth client ID                      |
+| `GOOGLE_CLIENT_SECRET` | ❌       | Google OAuth client secret                  |
+| `SMTP_HOST`            | ❌       | SMTP server (e.g. `smtp.gmail.com`)         |
+| `SMTP_PORT`            | ❌       | SMTP port (e.g. `587`)                      |
+| `SMTP_USER`            | ❌       | SMTP username                               |
+| `SMTP_PASS`            | ❌       | SMTP password / app password                |
+| `EMAIL_FROM`           | ❌       | Sender address                              |
+| `CRON_SECRET`          | ❌       | Secret for Vercel cron jobs                 |
 
 ## Testing
 
