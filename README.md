@@ -1,37 +1,66 @@
+<div align="center">
+
 # Kha₹cha
 
-A personal expense tracker built for tracking monthly spending from screenshot ingestion (OCR), with budgets, analytics, persona engine, email notifications, and multi-user support.
+### See Where Your Money Flows
+
+A privacy-first personal expense tracker that turns your spending app screenshots into structured financial data using OCR — no manual entry, no cloud AI, no data selling.
+
+[![Live Demo](https://img.shields.io/badge/Live-khrcha.vercel.app-F59E0B?style=for-the-badge&logo=vercel&logoColor=white)](https://khrcha.vercel.app)
+[![Tests](https://img.shields.io/badge/Tests-713%20Passing-22c55e?style=for-the-badge&logo=vitest&logoColor=white)](#testing)
+[![TypeScript](https://img.shields.io/badge/TypeScript-100%25-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](#tech-stack)
+
+</div>
+
+---
+
+## The Problem
+
+Millions of Indians track spending through apps like CRED, Buddy, or Fi — but those apps don't let you export your data. You're stuck screenshotting monthly summaries and manually entering numbers into spreadsheets.
+
+**Kharcha automates the entire workflow.** Upload a screenshot, and the OCR engine extracts every category and amount — no internet connection required, no data leaves your browser.
 
 ## Features
 
-- **Screenshot OCR** — Upload spending screenshots, auto-extract categories and amounts via Tesseract.js
-- **Expense Management** — Full CRUD with filters, pagination, and Excel/CSV export
-- **Budget Tracking** — Set per-category monthly limits with over-budget alerts
-- **Analytics Dashboard** — Month-over-month trends, savings rate, top categories (Recharts)
-- **Persona Engine** — 9 spending archetypes with monthly insights and recommendations
-- **Income Management** — Manual entry or PDF paystub parsing
-- **Email Notifications** — Monthly upload reminders and dashboard-ready emails (Nodemailer + node-cron)
-- **Multi-User** — Full data isolation per user, profile management, Google OAuth + credentials auth
-- **Dark/Light Mode** — System preference + manual toggle
-- **Neo-Brutalist UI** — Bold borders, hard shadows, Framer Motion animations
+### Core
+
+- **📸 Screenshot OCR** — Upload spending screenshots from any app (CRED, Buddy, Fi, etc.). Tesseract.js extracts categories and amounts entirely in-browser — offline, free, private
+- **💰 Expense Management** — Full CRUD with search, date/category filters, pagination, and bulk actions (delete, recategorize)
+- **📊 Analytics Dashboard** — Month-over-month comparisons, savings rate, top categories, trend analysis with interactive Recharts visualizations
+- **📋 Budget Tracking** — Set per-category monthly limits with visual progress bars and over-budget alerts
+
+### Smart
+
+- **🧠 Persona Engine** — 9 spending archetypes (Saver, Splurger, Red Flagger, etc.) with personalized monthly insights and actionable recommendations
+- **💼 Income Management** — Manual entry or automatic PDF paystub parsing for accurate savings calculations
+- **📧 Email Notifications** — Automated monthly upload reminders and dashboard-ready summaries via Gmail SMTP
+
+### Quality of Life
+
+- **📤 Export** — Download your data as Excel (.xlsx) or CSV anytime
+- **🔐 Multi-User** — Full data isolation, Google OAuth + email/password auth, profile management
+- **🌗 Dark/Light Mode** — System preference detection + manual toggle
+- **📱 PWA** — Installable on mobile, share screenshots directly from your gallery to Kharcha
+- **🎨 Neo-Brutalist UI** — Bold borders, hard shadows, and smooth Framer Motion animations
 
 ## Tech Stack
 
-| Layer      | Technology                                  |
-| ---------- | ------------------------------------------- |
-| Framework  | Next.js 16 (App Router)                     |
-| Language   | TypeScript                                  |
-| Styling    | TailwindCSS 4                               |
-| Components | shadcn/ui v4 (Base UI)                      |
-| Database   | Neon Postgres (serverless)                  |
-| ORM        | Drizzle ORM (neon-http adapter)             |
-| Auth       | NextAuth.js v5 (Google OAuth + Credentials) |
-| OCR        | Tesseract.js                                |
-| Charts     | Recharts                                    |
-| Email      | Nodemailer + node-cron                      |
-| Animation  | Framer Motion (motion/react)                |
-| Data       | @tanstack/react-query                       |
-| Testing    | Vitest + Playwright                         |
+| Layer        | Technology                                  |
+| ------------ | ------------------------------------------- |
+| Framework    | Next.js 16 (App Router)                     |
+| Language     | TypeScript (strict)                         |
+| Styling      | TailwindCSS 4                               |
+| Components   | shadcn/ui v4 (Base UI)                      |
+| Database     | Neon Postgres (serverless)                  |
+| ORM          | Drizzle ORM                                 |
+| Auth         | NextAuth.js v5 (Google OAuth + Credentials) |
+| OCR          | Tesseract.js (WASM, fully offline)          |
+| Charts       | Recharts                                    |
+| Data Fetching| TanStack React Query + localStorage persist |
+| Email        | Nodemailer + node-cron                      |
+| Animations   | Framer Motion (motion/react)                |
+| Testing      | Vitest (713 unit/integration) + Playwright (23 E2E) |
+| Deployment   | Vercel + Docker                             |
 
 ## Getting Started
 
@@ -39,43 +68,57 @@ A personal expense tracker built for tracking monthly spending from screenshot i
 
 - Node.js 20+
 - npm 10+
+- A [Neon](https://neon.tech) Postgres database (free tier works)
 
 ### Setup
 
 ```bash
+# Clone the repo
+git clone https://github.com/your-username/kharcha.git
+cd kharcha
+
 # Install dependencies
 npm install
 
-# Copy environment file and fill in values
+# Copy environment file
 cp .env.example .env.local
 
-# Run development server
+# Push schema to database
+npm run db:push
+
+# Start development server
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) and register an account.
+Open [http://localhost:3000](http://localhost:3000) and create an account.
 
 ### Environment Variables
 
-See `.env.example` for all required variables:
-
-- `DATABASE_URL` — Neon Postgres connection string
-- `NEXTAUTH_SECRET` — Generate with `openssl rand -base64 32`
-- `NEXTAUTH_URL` — Your app URL
-- `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` — Google OAuth credentials
-- `SMTP_*` / `EMAIL_FROM` — Email notification config (optional)
+| Variable | Required | Description |
+| -------- | -------- | ----------- |
+| `DATABASE_URL` | ✅ | Neon Postgres connection string |
+| `AUTH_SECRET` | ✅ | Session secret — `openssl rand -base64 32` |
+| `AUTH_URL` | ✅ | Your app URL (e.g. `http://localhost:3000`) |
+| `GOOGLE_CLIENT_ID` | ❌ | Google OAuth client ID |
+| `GOOGLE_CLIENT_SECRET` | ❌ | Google OAuth client secret |
+| `SMTP_HOST` | ❌ | SMTP server (e.g. `smtp.gmail.com`) |
+| `SMTP_PORT` | ❌ | SMTP port (e.g. `587`) |
+| `SMTP_USER` | ❌ | SMTP username |
+| `SMTP_PASS` | ❌ | SMTP password / app password |
+| `EMAIL_FROM` | ❌ | Sender address |
+| `CRON_SECRET` | ❌ | Secret for Vercel cron jobs |
 
 ## Testing
 
 ```bash
-# Unit + integration tests (602+ tests)
-NODE_TLS_REJECT_UNAUTHORIZED=0 npx vitest run
+# Unit + integration tests (713+ tests)
+npm test
 
 # E2E tests (23+ tests)
-NODE_TLS_REJECT_UNAUTHORIZED=0 npx playwright test --reporter=list
+npm run test:e2e
 
 # Lint
-npx eslint src/
+npm run lint
 
 # Format check
 npm run format:check
@@ -85,9 +128,6 @@ npm run format:check
 
 ```bash
 # Build and run
-docker compose up --build
-
-# Or build manually
 docker build -t kharcha .
 docker run -p 3000:3000 --env-file .env.local kharcha
 ```
@@ -97,38 +137,47 @@ docker run -p 3000:3000 --env-file .env.local kharcha
 ```
 src/
 ├── app/
-│   ├── (app)/          # Authenticated pages (dashboard, expenses, analytics, etc.)
-│   ├── api/            # API routes (expenses, categories, budgets, uploads, etc.)
-│   └── auth/           # Login + register pages
+│   ├── (app)/              # Authenticated pages
+│   │   ├── dashboard/      # Bento grid with analytics overview
+│   │   ├── expenses/       # Expense table with filters + bulk actions
+│   │   ├── analytics/      # Charts: donut, bar, MoM, trends
+│   │   ├── upload/         # OCR screenshot upload + review
+│   │   ├── persona/        # Monthly spending persona + insights
+│   │   └── settings/       # Categories, budgets, income, email, profile
+│   ├── api/                # 26 API routes (all auth-guarded)
+│   └── auth/               # Login, register, forgot/reset password
 ├── components/
-│   ├── layout/         # Sidebar, header, bottom nav, error boundary
-│   ├── expenses/       # Expense table, filters, form
-│   ├── persona/        # Persona card, insights, recommendations
-│   ├── upload/         # Dropzone, review table
-│   └── ui/             # shadcn/ui components
-├── hooks/              # React Query hooks (use-analytics, use-expenses, etc.)
-├── providers/          # QueryProvider (React Query)
+│   ├── layout/             # Sidebar, header, mobile bottom nav
+│   ├── expenses/           # Table, filters, form components
+│   ├── persona/            # Persona card, insights, recommendations
+│   ├── upload/             # Dropzone, review table
+│   └── ui/                 # shadcn/ui + custom components
+├── hooks/                  # TanStack Query hooks
+├── providers/              # React Query + theme providers
 └── lib/
-    ├── analytics/      # MoM, savings, budget, trends calculators
-    ├── auth/           # NextAuth config
-    ├── db/             # Schema, connection (Neon HTTP), test utils
-    ├── email/          # Client, templates, service, scheduler
-    ├── export/         # Excel + CSV export
-    ├── ocr/            # Preprocessor, recognizer, parser, matcher, dedup
-    ├── persona/        # Archetypes, generator, insights, recommendations
-    ├── services/       # Category, expense, budget, income, upload, user services
-    └── utils/          # Validators, currency, dates
+    ├── ocr/                # 5-stage pipeline: preprocess → recognize → parse → match → dedup
+    ├── analytics/          # MoM, savings, budget, trends calculators
+    ├── persona/            # 9 archetypes, insight generator, recommendations
+    ├── services/           # Business logic (expenses, categories, budgets, income, uploads, users)
+    ├── email/              # SMTP client, HTML templates, scheduler
+    ├── export/             # Excel + CSV generators
+    ├── auth/               # NextAuth v5 config
+    ├── cache/              # Server-side LRU cache
+    ├── db/                 # Drizzle schema, Neon connection, test utilities
+    └── utils/              # Zod validators, currency formatting, date helpers
 ```
 
-## Phased Development
+## How the OCR Works
 
-| Phase | Status | Description                                                     |
-| ----- | ------ | --------------------------------------------------------------- |
-| 1     | ✅     | Foundation — DB schema, auth, category/expense services         |
-| 2     | ✅     | OCR Pipeline — Screenshot processing, parser, matcher, dedup    |
-| 3     | ✅     | Dashboard & Analytics — Charts, budgets UI, expense CRUD        |
-| 4     | ✅     | Persona Engine — 9 archetypes, insights, recommendations        |
-| 4.5   | ✅     | Income + Polish — Income management, pagination, month nav      |
-| 5     | ✅     | Email & Export — Notifications, Excel/CSV export                |
-| 6     | ✅     | Multi-User & Deploy — Data isolation, profile, Docker, security |
-| 7     | 🔄     | Polish & Deploy — Neon Postgres, React Query, security, Vercel  |
+```
+Screenshot → Sharp preprocessing → Tesseract.js WASM recognition
+         → Multi-strategy parser (6 regex patterns + chart header fallback)
+         → Fuzzy category matcher (Levenshtein + alias dictionary)
+         → Duplicate detection → Review UI → Save to DB
+```
+
+All processing happens **server-side in Node.js** — no external APIs, no cloud AI, no data exfiltration. The trained data file ships with the app.
+
+## License
+
+MIT
