@@ -21,6 +21,8 @@ import {
     Loader2,
     AlertTriangle,
     LogOut,
+    Eye,
+    EyeOff,
 } from "lucide-react";
 import {
     DropdownMenu,
@@ -42,6 +44,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useCurrency } from "@/contexts/currency-context";
+import { useAppStore } from "@/stores/app-store";
 import { SUPPORTED_CURRENCIES } from "@/lib/constants";
 
 const primaryNav = [
@@ -102,6 +105,7 @@ export function Sidebar({ user }: SidebarProps) {
     const pathname = usePathname();
     const { setTheme, theme } = useTheme();
     const { currency, setCurrency, loading: ratesLoading, error: ratesError } = useCurrency();
+    const { privacyMode, togglePrivacy } = useAppStore();
     const currentCurrency = SUPPORTED_CURRENCIES.find((c) => c.code === currency);
 
     return (
@@ -213,6 +217,26 @@ export function Sidebar({ user }: SidebarProps) {
                             })}
                         </DropdownMenuContent>
                     </DropdownMenu>
+
+                    <button
+                        onClick={togglePrivacy}
+                        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md border-2 bg-card hover:bg-muted transition-colors ${
+                            privacyMode
+                                ? "border-amber-500 bg-amber-500/10 hover:bg-amber-500/20"
+                                : "border-border"
+                        }`}
+                        title={
+                            privacyMode
+                                ? "Privacy mode on — click to reveal"
+                                : "Click to hide amounts"
+                        }
+                    >
+                        {privacyMode ? (
+                            <EyeOff className="h-4 w-4 text-amber-500" />
+                        ) : (
+                            <Eye className="h-4 w-4" />
+                        )}
+                    </button>
 
                     <button
                         data-tour="theme-toggle"

@@ -511,7 +511,7 @@ export default function AnalyticsPage() {
                                         Total: {formatAmount(totalSpend)}
                                     </p>
                                     <div className="flex flex-row gap-2 md:gap-4">
-                                        <div className="h-[120px] md:h-[240px] w-[120px] md:w-1/2 shrink-0 relative">
+                                        <div className="h-[120px] w-[120px] md:h-[300px] md:w-[55%] shrink-0 relative">
                                             <ResponsiveContainer
                                                 width="100%"
                                                 height="100%"
@@ -522,8 +522,8 @@ export default function AnalyticsPage() {
                                                         data={donutData}
                                                         cx="50%"
                                                         cy="50%"
-                                                        innerRadius={30}
-                                                        outerRadius={55}
+                                                        innerRadius="38%"
+                                                        outerRadius="90%"
                                                         paddingAngle={2}
                                                         dataKey="value"
                                                         isAnimationActive={true}
